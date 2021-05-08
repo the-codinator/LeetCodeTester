@@ -1,0 +1,10 @@
+<configuration>
+  <root level="INFO">
+    <appender name="CONSOLE_APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+      <target>System.out</target>
+      <encoder>
+        <pattern>[%-5p] [%t] %logger{0}:%line -- %message %n</pattern>
+      </encoder>
+    </appender>
+  </root>
+</configuration>
