@@ -60,7 +60,7 @@ Run class as a JUnit 5 test from your IDE / command line.
 
 ### Advanced Usage
 
-
+Refer [documentation](DOCS.md)
 
 ## Issue Reporting & Contribution
 

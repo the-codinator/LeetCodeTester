@@ -4,7 +4,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class TestCase {
+public class LCTestCase {
 
     private List<Object> input;
     private Object expected;

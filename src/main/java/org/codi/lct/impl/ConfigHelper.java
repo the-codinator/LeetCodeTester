@@ -1,57 +1,51 @@
 package org.codi.lct.impl;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Properties;
+import lombok.experimental.ExtensionMethod;
 import lombok.experimental.UtilityClass;
-import org.codi.lct.annotation.LCConfig;
-import org.codi.lct.data.Config;
-import org.codi.lct.data.Config.ConfigBuilder;
+import org.codi.lct.annotation.settings.LCInputFiles;
+import org.codi.lct.annotation.settings.LCTrackExecutionTime;
+import org.codi.lct.data.LCConfig;
+import org.codi.lct.data.LCConfig.LCConfigBuilder;
 import org.codi.lct.junit.LCTester;
 
 @UtilityClass
+@ExtensionMethod(Util.class)
 public class ConfigHelper {
 
     /**
      * Config instance used as base configurations matching annotation property default values
      */
-    public static final Config BASE_INSTANCE;
+    public static final LCConfig BASE_CONFIG;
 
     static {
-        @LCConfig
-        class Dummy {
-
-        }
-
-        LCConfig config = Dummy.class.getAnnotation(LCConfig.class);
-        // Create base instance with default values (note: files is ignored)
-        BASE_INSTANCE = Config.builder()
-            .enabled(config.enabled())
-            .timed(config.timed())
-            .crash(config.crash())
-            .tle(config.tle())
+        // Load default properties
+        Properties props = FileHelper.loadProperties(null, "lc-tester.properties");
+        BASE_CONFIG = LCConfig.builder()
+            .trackExecutionTime(props.getBooleanProperty(LCConfig.Fields.trackExecutionTime, false))
+            .crashOnFailure(props.getBooleanProperty(LCConfig.Fields.crashOnFailure, false))
+            .allowMissingExpectedValues(props.getBooleanProperty(LCConfig.Fields.allowMissingExpectedValues, false))
+            .executionTimeLimit(props.getIntegerProperty(LCConfig.Fields.executionTimeLimit, 0))
             .build();
     }
 
-    public Config withClass(Config baseConfig, Class<? extends LCTester> cls) {
-        return overlay(baseConfig.toBuilder().files(FileHelper.defaultTestFileName(cls)),
-            cls.getAnnotation(LCConfig.class));
+    public LCConfig withClass(LCConfig baseConfig, Class<? extends LCTester> cls) {
+        return overlay(baseConfig.toBuilder().inputFiles(FileHelper.defaultTestFileName(cls)), cls);
     }
 
-    public Config withMethod(Config classConfig, Method method) {
-        return overlay(classConfig.toBuilder(), method.getAnnotation(LCConfig.class));
+    public LCConfig withMethod(LCConfig classConfig, Method method) {
+        return overlay(classConfig.toBuilder(), method);
     }
 
-    private Config overlay(ConfigBuilder builder, LCConfig config) {
-        if (config != null) {
-            if (!config.enabled()) {
-                builder.enabled(false);
-            }
-            if (config.timed()) {
-                builder.timed(true);
-            }
-            if (config.files().length != 0) {
-                builder.files(Arrays.asList(config.files()));
-            }
+    private LCConfig overlay(LCConfigBuilder builder, AnnotatedElement element) {
+        if (element.isAnnotationPresent(LCTrackExecutionTime.class)) {
+            builder.trackExecutionTime(element.getAnnotation(LCTrackExecutionTime.class).value());
+        }
+        if (element.isAnnotationPresent(LCInputFiles.class)) {
+            builder.inputFiles(Arrays.asList(element.getAnnotation(LCInputFiles.class).value()));
         }
         return builder.build();
     }
