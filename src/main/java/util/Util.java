@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
-import org.codi.lct.core.LCError;
+import org.codi.lct.core.LCException;
 
 @UtilityClass
 public class Util {
@@ -30,7 +30,7 @@ public class Util {
      */
     public <T> T requireNonNull(T value, String name) {
         if (value == null) {
-            throw new LCError(name + " cannot not be null");
+            throw new LCException(name + " cannot not be null");
         }
         return value;
     }
@@ -40,34 +40,34 @@ public class Util {
      */
     public String loadFileContents(String fileName) {
         if (fileName == null || fileName.isBlank()) {
-            throw new LCError("File name null/empty");
+            throw new LCException("File name null/empty");
         }
         Enumeration<URL> resources;
         try {
             resources = Thread.currentThread().getContextClassLoader().getResources(fileName);
         } catch (IOException e) {
-            throw new LCError("Error reading resources for " + fileName, e);
+            throw new LCException("Error reading resources for " + fileName, e);
         }
         if (!resources.hasMoreElements()) {
-            throw new LCError("No resource found for " + fileName);
+            throw new LCException("No resource found for " + fileName);
         }
         URL url = resources.nextElement();
         if (resources.hasMoreElements()) {
-            throw new LCError("Multiple resources found for " + fileName);
+            throw new LCException("Multiple resources found for " + fileName);
         }
         InputStream inputStream;
         try {
             inputStream = url.openStream();
         } catch (IOException e) {
-            throw new LCError("Error opening stream for resource " + url, e);
+            throw new LCException("Error opening stream for resource " + url, e);
         }
         if (inputStream == null) {
-            throw new LCError("Resource input stream is null for " + url);
+            throw new LCException("Resource input stream is null for " + url);
         }
         try {
             return new String(inputStream.readAllBytes());
         } catch (IOException e) {
-            throw new LCError("Error reading contents from resource stream for " + url, e);
+            throw new LCException("Error reading contents from resource stream for " + url, e);
         }
     }
 

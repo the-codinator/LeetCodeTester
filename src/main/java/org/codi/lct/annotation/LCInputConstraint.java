@@ -1,16 +1,15 @@
-package org.codi.lct.junit;
+package org.codi.lct.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.codi.lct.annotation.LCSolution;
 
 /**
- * Fields annotated with LCExpected are considered expected result of the {@link LCSolution} program.
+ * A set of validations that can be applied on the input to handle constraints
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LCExpected {
-
+public @interface LCInputConstraint {
+    // TODO
 }

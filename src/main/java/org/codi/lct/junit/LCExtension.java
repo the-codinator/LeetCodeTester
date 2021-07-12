@@ -1,27 +1,22 @@
 package org.codi.lct.junit;
 
-import org.codi.lct.impl.ExtensionDataHelper;
-import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
+import lombok.experimental.ExtensionMethod;
+import org.codi.lct.data.Config;
+import org.codi.lct.impl.ConfigHelper;
+import org.codi.lct.impl.ValidationHelper;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-/**
- * JUnit 5 extension to wrap on the class for executing multiple test scenarios.
- * Each test scenario should define inputs and expected results using {@link LCInput} and {@link LCExpected}.
- */
-public class LCExtension implements Extension, BeforeAllCallback, AfterTestExecutionCallback {
+@ExtensionMethod({ConfigHelper.class, ValidationHelper.class})
+public class LCExtension implements BeforeAllCallback {
 
-    /**
-     * Generate and cache test class information
-     */
-    @Override
-    public void beforeAll(ExtensionContext context) {
-        ExtensionDataHelper.get(context.getRequiredTestClass());
-    }
+    private Class<? extends LCTester> testClass;
+    private Config classConfig;
+    private LCTester testInstance;
 
     @Override
-    public void afterTestExecution(ExtensionContext context) throws Exception {
-        // TODO: execution
+    public void beforeAll(ExtensionContext context) throws Exception {
+        testClass = context.getRequiredTestClass().validate();
+        classConfig = ConfigHelper.BASE_INSTANCE.withClass(testClass);
     }
 }

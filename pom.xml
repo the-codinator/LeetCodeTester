@@ -20,15 +20,20 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <plugin.compiler.version>3.8.1</plugin.compiler.version>
     <plugin.resources.version>3.2.0</plugin.resources.version>
+    <plugin.surefire.version>3.0.0-M4</plugin.surefire.version>
     <plugin.enforcer.version>3.0.0-M3</plugin.enforcer.version>
     <plugin.versions.version>2.8.1</plugin.versions.version>
-    <plugin.checkstyle.version>3.1.1</plugin.checkstyle.version>
+    <plugin.checkstyle.version>3.1.2</plugin.checkstyle.version>
+    <config.checkstyle.version>8.44</config.checkstyle.version>
+    <plugin.javadoc.version>3.3.0</plugin.javadoc.version>
+    <plugin.sources.version>3.2.1</plugin.sources.version>
+    <plugin.moditect.version>1.0.0.RC1</plugin.moditect.version>
     <lombok.version>1.18.20</lombok.version>
     <!-- runtime -->
-    <jackson.version>2.12.3</jackson.version>
+    <jackson.version>2.12.4</jackson.version>
     <lang3.version>3.12.0</lang3.version>
-    <junit.version>5.7.1</junit.version>
-    <assertj.version>3.19.0</assertj.version>
+    <junit.version>5.7.2</junit.version>
+    <assertj.version>3.20.2</assertj.version>
     <slf4j.version>1.7.30</slf4j.version>
     <!-- test -->
     <logback.version>1.2.3</logback.version>
@@ -41,6 +46,13 @@
         <filtering>true</filtering>
       </resource>
     </resources>
+
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
 
     <plugins>
       <!-- Compile Phase -->
@@ -59,6 +71,13 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <version>${plugin.resources.version}</version>
+      </plugin>
+
+      <!-- Test Runner -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${plugin.surefire.version}</version>
       </plugin>
 
       <!-- Tools / dependency version management -->
@@ -90,6 +109,18 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>versions-maven-plugin</artifactId>
         <version>${plugin.versions.version}</version>
+        <configuration>
+          <rulesUri>file:///${project.basedir}/.mvn/versions-maven-plugin.rules.xml</rulesUri>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>display-dependency-updates</goal>
+              <goal>display-plugin-updates</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <!-- Linting -->
@@ -97,6 +128,13 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>${plugin.checkstyle.version}</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.puppycrawl.tools</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>${config.checkstyle.version}</version>
+          </dependency>
+        </dependencies>
         <configuration>
           <configLocation>checkstyle.xml</configLocation>
         </configuration>
@@ -110,9 +148,45 @@
         </executions>
       </plugin>
 
-      <!-- Release -->
-      <!-- TODO: Release plugin configuration -->
+      <!-- Packaging & Release -->
+
+      <!-- TODO: Add moditect for generating Java Module info -->
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>${plugin.sources.version}</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${plugin.javadoc.version}</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <show>protected</show>
+          <nohelp>true</nohelp>
+          <doclint>-missing</doclint>
+        </configuration>
+      </plugin>
     </plugins>
+
+    <!-- TODO: Release plugin configuration -->
   </build>
 
   <dependencies>
@@ -143,7 +217,6 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
