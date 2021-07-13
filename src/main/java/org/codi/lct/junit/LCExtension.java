@@ -1,14 +1,18 @@
 package org.codi.lct.junit;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.codi.lct.core.LCException;
 import org.codi.lct.core.LCExecutor;
+import org.codi.lct.core.LCTestCase;
 import org.codi.lct.data.LCConfig;
 import org.codi.lct.data.LCTestCaseResult;
 import org.codi.lct.impl.ConfigHelper;
+import org.codi.lct.impl.LCExecutorImpl;
 import org.codi.lct.impl.ValidationHelper;
 import org.codi.lct.impl.junit.JunitHelper;
 import org.junit.jupiter.api.extension.AfterAllCallback;
@@ -32,7 +36,11 @@ public class LCExtension implements BeforeAllCallback, BeforeEachCallback, After
 
     private Class<?> testClass;
     private LCConfig classConfig;
+    @Getter
+    private List<LCTestCase> testCases;
     private List<LCTestCaseResult> results = new ArrayList<>();
+    private Method solutionMethod;
+    private boolean executedAtLeastOnce;
 
     @Override
     public void beforeAll(ExtensionContext context) {
@@ -43,17 +51,23 @@ public class LCExtension implements BeforeAllCallback, BeforeEachCallback, After
 
     @Override
     public void beforeEach(ExtensionContext context) {
-        System.out.println("LIFECYCLE: Before Each");
+        executedAtLeastOnce = true;
+        LCExecutorImpl executor = context.getExecutor();
+        executor.setTestClass(testClass);
+        executor.setConfig(classConfig.withMethod(solutionMethod));
+        executor.setInstance(context.getRequiredTestInstance());
+        executor.setSolutionMethod(solutionMethod);
+        // TODO: prepare executor
     }
 
     @Override
     public void afterEach(ExtensionContext context) {
-        System.out.println("LIFECYCLE: After Each");
+        // TODO: aggregate results
     }
 
     @Override
     public void afterAll(ExtensionContext context) {
-        if (!context.getExecutor().isExecutedAtLeastOnce()) {
+        if (!executedAtLeastOnce) {
             throw new LCException("No tests executed!");
         }
     }
@@ -65,6 +79,7 @@ public class LCExtension implements BeforeAllCallback, BeforeEachCallback, After
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-        return extensionContext.getExecutor();
+        LCExecutorImpl executor = extensionContext.getExecutor();
+        return (LCExecutor) executor::executeTestCase; // We do this so clients don't have direct access to the executor
     }
 }

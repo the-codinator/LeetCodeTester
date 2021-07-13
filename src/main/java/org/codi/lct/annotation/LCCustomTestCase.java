@@ -6,14 +6,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marker annotation for solution implementation
+ * Marker annotation on a method which returns test cases.
  *
- * Optional if the class declares a single public non-static method
- *
- * TODO: support multiple @LCSolution methods - provider create additional testcases? Compatibility with manual tests?
+ * Annotated method must:
+ * - be {@code public}
+ * - be {@code static}
+ * - take no arguments
+ * - return a list of test cases {@code List&lt;LCTestCase&gt;}
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LCSolution {
+public @interface LCCustomTestCase {
 
 }

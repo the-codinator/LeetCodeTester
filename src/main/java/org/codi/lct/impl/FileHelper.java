@@ -2,8 +2,6 @@ package org.codi.lct.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +11,9 @@ import org.codi.lct.core.LCException;
 @Slf4j
 public class FileHelper {
 
-    public List<String> defaultTestFileName(Class<?> cls) {
+    public String defaultTestFileName(Class<?> cls) {
         // Replace all '$' and '.' in the classes fully qualified name with '/'
-        return Collections.singletonList(String.format("lct/%s.txt", cls.getName().replaceAll("[.$]+", "/")));
+        return String.format("lct/%s.txt", cls.getName().replaceAll("[.$]+", "/"));
     }
 
     public InputStream readResource(String path) {

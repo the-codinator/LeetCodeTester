@@ -32,11 +32,12 @@ public class ConfigHelper {
             .crashOnFailure(props.getBooleanProperty(LCConfig.Fields.crashOnFailure, false))
             .allowMissingExpectedValues(props.getBooleanProperty(LCConfig.Fields.allowMissingExpectedValues, false))
             .executionTimeLimit(props.getIntegerProperty(LCConfig.Fields.executionTimeLimit, 0))
+            .useDefaultFile(true)
             .build();
     }
 
     public LCConfig withClass(LCConfig baseConfig, Class<?> cls) {
-        return overlay(baseConfig.toBuilder().inputFiles(FileHelper.defaultTestFileName(cls)), cls);
+        return overlay(baseConfig.toBuilder(), cls);
     }
 
     public LCConfig withMethod(LCConfig classConfig, Method method) {
@@ -58,7 +59,7 @@ public class ConfigHelper {
             if (files.length == 0) {
                 log.warn("Found @LCInputFiles with empty file list on member: " + element);
             }
-            builder.inputFiles(Arrays.asList(files));
+            builder.useDefaultFile(false).inputFiles(Arrays.asList(files));
         }
         return builder.build();
     }
