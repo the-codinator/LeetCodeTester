@@ -13,10 +13,10 @@ import lombok.experimental.FieldNameConstants;
 @FieldNameConstants
 public class LCConfig {
 
-    boolean trackExecutionTime;
-    boolean crashOnFailure;
-    boolean allowMissingExpectedValues;
-    int executionTimeLimit;
+    boolean trackExecutionTime; // TODO: impl, check if Junit provides ootb timing of tests, must include instantiation
+    boolean crashOnFailure; // TODO: impl, check if Junit provides ootb setting
+    boolean allowMissingExpectedValues; // TODO: impl
+    int executionTimeLimit; // TODO: impl, JUnit does have something around timeout for tests
     List<String> inputFiles;
 
     public static class LCConfigBuilder {

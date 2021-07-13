@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <!--
   ~ @author the-codinator
-  ~ created on 2020/5/23
+  ~ updated on 2021/7/13
+  ~ Checkstyle Version: 8.44
   ~ Derived from and modified Google's Check-style configuration
   -->
 
@@ -332,17 +333,22 @@
       <property name="allowedAnnotations" value="Override, Test"/>
       <property name="tokens" value="METHOD_DEF, CTOR_DEF, ANNOTATION_FIELD_DEF, COMPACT_CTOR_DEF"/>
     </module>
-    <module name="MissingJavadocMethod">
+    <!--<module name="MissingJavadocMethod">
       <property name="scope" value="public"/>
       <property name="minLineCount" value="5"/>
       <property name="allowedAnnotations" value=
         "Inject, Override, Test, GET, POST, PUT, PATCH, DELETE"/>
       <property name="tokens" value="METHOD_DEF, CTOR_DEF, ANNOTATION_FIELD_DEF, COMPACT_CTOR_DEF"/>
-    </module>
+    </module>-->
     <module name="MethodName">
       <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>
       <message key="name.invalidPattern"
         value="Method name ''{0}'' must match pattern ''{1}''."/>
+      <property name="applyToPrivate" value="false"/>
+    </module>
+    <module name="MethodLength">
+      <property name="tokens" value="METHOD_DEF, CTOR_DEF, COMPACT_CTOR_DEF"/>
+      <property name="max" value="60"/>
     </module>
     <module name="SingleLineJavadoc">
       <property name="ignoreInlineTags" value="false"/>

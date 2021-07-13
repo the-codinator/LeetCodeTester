@@ -6,14 +6,17 @@ import java.util.Arrays;
 import java.util.Properties;
 import lombok.experimental.ExtensionMethod;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.codi.lct.annotation.settings.LCAllowMissingExpectedValues;
+import org.codi.lct.annotation.settings.LCExecutionTimeLimit;
 import org.codi.lct.annotation.settings.LCInputFiles;
 import org.codi.lct.annotation.settings.LCTrackExecutionTime;
 import org.codi.lct.data.LCConfig;
 import org.codi.lct.data.LCConfig.LCConfigBuilder;
-import org.codi.lct.junit.LCTester;
 
 @UtilityClass
 @ExtensionMethod(Util.class)
+@Slf4j
 public class ConfigHelper {
 
     /**
@@ -32,7 +35,7 @@ public class ConfigHelper {
             .build();
     }
 
-    public LCConfig withClass(LCConfig baseConfig, Class<? extends LCTester> cls) {
+    public LCConfig withClass(LCConfig baseConfig, Class<?> cls) {
         return overlay(baseConfig.toBuilder().inputFiles(FileHelper.defaultTestFileName(cls)), cls);
     }
 
@@ -44,8 +47,18 @@ public class ConfigHelper {
         if (element.isAnnotationPresent(LCTrackExecutionTime.class)) {
             builder.trackExecutionTime(element.getAnnotation(LCTrackExecutionTime.class).value());
         }
+        if (element.isAnnotationPresent(LCAllowMissingExpectedValues.class)) {
+            builder.allowMissingExpectedValues(element.getAnnotation(LCAllowMissingExpectedValues.class).value());
+        }
+        if (element.isAnnotationPresent(LCExecutionTimeLimit.class)) {
+            builder.executionTimeLimit(element.getAnnotation(LCExecutionTimeLimit.class).value());
+        }
         if (element.isAnnotationPresent(LCInputFiles.class)) {
-            builder.inputFiles(Arrays.asList(element.getAnnotation(LCInputFiles.class).value()));
+            String[] files = element.getAnnotation(LCInputFiles.class).value();
+            if (files.length == 0) {
+                log.warn("Found @LCInputFiles with empty file list on member: " + element);
+            }
+            builder.inputFiles(Arrays.asList(files));
         }
         return builder.build();
     }

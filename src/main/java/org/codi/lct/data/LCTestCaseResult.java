@@ -4,7 +4,8 @@ import lombok.Value;
 import org.codi.lct.core.LCTestCase;
 
 @Value
-public class LCTestCaseExecution {
+public class LCTestCaseResult {
 
     LCTestCase testCase;
+    Object actual;
 }
