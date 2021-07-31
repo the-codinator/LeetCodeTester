@@ -1,10 +1,9 @@
-package org.codi.lct.junit;
+package org.codi.lct.core;
 
 import lombok.experimental.ExtensionMethod;
-import org.codi.lct.core.LCExecutor;
-import org.codi.lct.core.LCTestCase;
+import org.codi.lct.impl.AutoCustomTestCaseProvider;
+import org.codi.lct.impl.AutoDataFileTestCaseProvider;
 import org.codi.lct.impl.Util;
-import org.codi.lct.impl.junit.AutoTestCaseProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 public abstract class LCTester {
 
     @TestTemplate
-    @ExtendWith(AutoTestCaseProvider.class)
+    @ExtendWith(AutoDataFileTestCaseProvider.class)
+    @ExtendWith(AutoCustomTestCaseProvider.class)
     @DisplayName("Auto LC Test Runner")
     final void autoTestLC(LCTestCase testCase, LCExecutor executor) {
         executor.executeTestCase(testCase);

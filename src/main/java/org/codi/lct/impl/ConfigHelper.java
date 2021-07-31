@@ -3,6 +3,7 @@ package org.codi.lct.impl;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
 import lombok.experimental.ExtensionMethod;
 import lombok.experimental.UtilityClass;
@@ -11,12 +12,13 @@ import org.codi.lct.annotation.settings.LCAllowMissingExpectedValues;
 import org.codi.lct.annotation.settings.LCExecutionTimeLimit;
 import org.codi.lct.annotation.settings.LCInputFiles;
 import org.codi.lct.annotation.settings.LCTrackExecutionTime;
+import org.codi.lct.core.LCException;
 import org.codi.lct.data.LCConfig;
 import org.codi.lct.data.LCConfig.LCConfigBuilder;
 
+@Slf4j
 @UtilityClass
 @ExtensionMethod(Util.class)
-@Slf4j
 public class ConfigHelper {
 
     /**
@@ -32,16 +34,20 @@ public class ConfigHelper {
             .crashOnFailure(props.getBooleanProperty(LCConfig.Fields.crashOnFailure, false))
             .allowMissingExpectedValues(props.getBooleanProperty(LCConfig.Fields.allowMissingExpectedValues, false))
             .executionTimeLimit(props.getIntegerProperty(LCConfig.Fields.executionTimeLimit, 0))
-            .useDefaultFile(true)
+            .inputFiles(Collections.singletonList(""))
+            .warnOnEmptyOrMissingTestFiles(false)
             .build();
     }
 
     public LCConfig withClass(LCConfig baseConfig, Class<?> cls) {
-        return overlay(baseConfig.toBuilder(), cls);
+        return overlay(baseConfig.toBuilder().testClass(cls), cls);
     }
 
     public LCConfig withMethod(LCConfig classConfig, Method method) {
-        return overlay(classConfig.toBuilder(), method);
+        if (classConfig.getTestClass() != method.getDeclaringClass()) {
+            throw new LCException("[Internal] Method declaring class mismatch");
+        }
+        return overlay(classConfig.toBuilder().solutionMethod(method), method);
     }
 
     private LCConfig overlay(LCConfigBuilder builder, AnnotatedElement element) {
@@ -59,7 +65,7 @@ public class ConfigHelper {
             if (files.length == 0) {
                 log.warn("Found @LCInputFiles with empty file list on member: " + element);
             }
-            builder.useDefaultFile(false).inputFiles(Arrays.asList(files));
+            builder.warnOnEmptyOrMissingTestFiles(true).inputFiles(Arrays.asList(files));
         }
         return builder.build();
     }

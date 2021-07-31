@@ -2,7 +2,7 @@ package org.codi.lct.example;
 
 import java.util.Arrays;
 import org.codi.lct.annotation.LCSolution;
-import org.codi.lct.junit.LCTester;
+import org.codi.lct.core.LCTester;
 
 /**
  * A very simple first example.

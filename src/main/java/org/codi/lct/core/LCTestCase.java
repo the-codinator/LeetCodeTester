@@ -22,8 +22,4 @@ public class LCTestCase {
         this.expected = expected;
         this.inputs = inputs == null ? Collections.emptyList() : List.of(inputs);
     }
-
-    public static class LCTestCaseBuilder {
-        // So that Javadoc doesn't cry...
-    }
 }

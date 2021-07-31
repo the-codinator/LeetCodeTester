@@ -1,20 +1,15 @@
-package org.codi.lct.junit;
+package org.codi.lct.impl;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Getter;
+import java.util.stream.Collectors;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.codi.lct.core.LCException;
 import org.codi.lct.core.LCExecutor;
-import org.codi.lct.core.LCTestCase;
+import org.codi.lct.core.LCTester;
 import org.codi.lct.data.LCConfig;
-import org.codi.lct.data.LCTestCaseResult;
-import org.codi.lct.impl.ConfigHelper;
-import org.codi.lct.impl.LCExecutorImpl;
-import org.codi.lct.impl.ValidationHelper;
-import org.codi.lct.impl.junit.JunitHelper;
+import org.codi.lct.data.LCTestCaseExecution;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -31,38 +26,37 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  */
 @Slf4j
 @ExtensionMethod({ConfigHelper.class, ValidationHelper.class, JunitHelper.class})
-public class LCExtension implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback, AfterAllCallback,
+public class LCExtensionImpl implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback, AfterAllCallback,
     ParameterResolver {
 
-    private Class<?> testClass;
     private LCConfig classConfig;
-    @Getter
-    private List<LCTestCase> testCases;
-    private List<LCTestCaseResult> results = new ArrayList<>();
-    private Method solutionMethod;
+    private List<LCConfig> solutionMethodConfigs;
+    private List<LCTestCaseExecution> results = new ArrayList<>();
     private boolean executedAtLeastOnce;
+
+    // ***** Test Lifecycle ***** //
 
     @Override
     public void beforeAll(ExtensionContext context) {
-        System.out.println("LIFECYCLE: Before All");
-        testClass = context.getRequiredTestClass().validate();
+        Class<?> testClass = context.getRequiredTestClass();
+        log.info("Testing class: " + testClass.getSimpleName());
         classConfig = ConfigHelper.BASE_CONFIG.withClass(testClass);
+        solutionMethodConfigs = ReflectionHelper.findSolutionMethods(testClass)
+            .stream()
+            .map(method -> classConfig.withMethod(method))
+            .collect(Collectors.toList());
     }
 
     @Override
     public void beforeEach(ExtensionContext context) {
         executedAtLeastOnce = true;
-        LCExecutorImpl executor = context.getExecutor();
-        executor.setTestClass(testClass);
-        executor.setConfig(classConfig.withMethod(solutionMethod));
-        executor.setInstance(context.getRequiredTestInstance());
-        executor.setSolutionMethod(solutionMethod);
-        // TODO: prepare executor
+        // Prep new executor for each test case
+        context.createExecutor(new LCExecutorImpl(solutionMethodConfigs, context.getRequiredTestInstance()));
     }
 
     @Override
     public void afterEach(ExtensionContext context) {
-        // TODO: aggregate results
+        results.addAll(context.getExecutor().getExecutions());
     }
 
     @Override
@@ -70,7 +64,10 @@ public class LCExtension implements BeforeAllCallback, BeforeEachCallback, After
         if (!executedAtLeastOnce) {
             throw new LCException("No tests executed!");
         }
+        // TODO: summary & aggregations
     }
+
+    // ***** Parameter Resolvers ***** //
 
     @Override
     public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
@@ -79,7 +76,6 @@ public class LCExtension implements BeforeAllCallback, BeforeEachCallback, After
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-        LCExecutorImpl executor = extensionContext.getExecutor();
-        return (LCExecutor) executor::executeTestCase; // We do this so clients don't have direct access to the executor
+        return extensionContext.getExecutor().wrapped();
     }
 }

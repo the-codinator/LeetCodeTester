@@ -9,8 +9,6 @@ import java.lang.annotation.Target;
  * Marker annotation for solution implementation
  *
  * Optional if the class declares a single public non-static method
- *
- * TODO: support multiple @LCSolution methods - provider create additional testcases? Compatibility with manual tests?
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

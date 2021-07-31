@@ -6,9 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotate class / method to customize the list of files to read testcases from.
- * Paths are relative to classpath. Defaults to a single file under the "lct" directory under classpath resources with
- * the same path as the fully qualified class name after replacing '.' with '/'
+ * Annotate class / method to include custom files to read testcases from.
+ * Files paths are relative to program classpath.
  *
  * Note: using this annotation OVERRIDES (not append) the previous file list
  */
@@ -16,5 +15,16 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LCInputFiles {
 
-    String[] value();
+    /**
+     * Empty string represents the default file path. To include the default path in a custom list, include {@code ""} in
+     * the file list.
+     *
+     * Default path is the "lct" directory under classpath resources with the same name or path as the fully qualified
+     * class name
+     *
+     * For Example: If test class is {@code org.codi.example.MyTestClass} then default path of the data file is either
+     * {@code lct/org.codi.example.MyTestClass.txt} or {@code lct/org/codi/example/MyTestClass.txt} (Former takes
+     * precedence).
+     */
+    String[] value() default "";
 }

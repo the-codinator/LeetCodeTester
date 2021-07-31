@@ -1,4 +1,4 @@
-package org.codi.lct.impl.junit;
+package org.codi.lct.impl;
 
 import lombok.Value;
 import org.codi.lct.core.LCTestCase;
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
 
 @Value
-public class LCTestCaseParameterResolver implements ParameterResolver {
+public class TestCaseParameterResolver implements ParameterResolver {
 
     LCTestCase testCase;
 

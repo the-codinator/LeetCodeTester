@@ -11,7 +11,11 @@ import org.codi.lct.core.LCException;
 @Slf4j
 public class FileHelper {
 
-    public String defaultTestFileName(Class<?> cls) {
+    public String defaultTestFileNamePrimary(Class<?> cls) {
+        return String.format("lct/%s.txt", cls.getName());
+    }
+
+    public String defaultTestFileNameSecondary(Class<?> cls) {
         // Replace all '$' and '.' in the classes fully qualified name with '/'
         return String.format("lct/%s.txt", cls.getName().replaceAll("[.$]+", "/"));
     }
