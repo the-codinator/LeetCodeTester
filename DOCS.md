@@ -1,21 +1,15 @@
-# Maven
+Detailed Usage Documentation
+---
 
-Include the following dependency in your pom
+### Default settings configuration
 
-```xml
-<dependency>
-  <groupId>org.codi</groupId>
-  <artifactId>leetcode-tester</artifactId>
-  <version>0.0.1</version>
-  <!-- checkout latest version under releases -->
-</dependency>
+```properties
+# lc-tester.properties
+enabled=true
+
 ```
 
-# References
+The properties file `lc-tester.properties` allows configuration of global settings.
+The default values for each setting is present above
 
-Many folks like me don't like to go through endless documentation.
-If you would rather look at some examples and make your own way, checkout the [tests and examples](./src/test/java)
-
-# Documentation
-
-// TODO
+- `enabled` - boolean, global property to enable / disable testing
