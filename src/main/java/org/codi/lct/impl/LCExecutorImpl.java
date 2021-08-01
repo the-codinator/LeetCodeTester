@@ -31,6 +31,10 @@ public final class LCExecutorImpl implements LCExecutor {
     public void executeTestCase(@NonNull LCTestCase testCase) {
         this.testCase = testCase;
         // TODO: impl: execution (write code in ReflectionHelper, refer to Junit's Reflection util to invoke methods)
+        // Try to imagine this as Junit running @Test methods.
+        // What if we removed all this stupid stuff like @LCSolution, and just told people to put @TestTemplate on their
+        // solutions, and just provided a data file & custom method based provider to use with @ExtendWith ?
+        // What value are we adding ? timing execution, etc...
         // TODO: impl: checker
     }
 

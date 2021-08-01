@@ -59,6 +59,6 @@ public final class AutoDataFileTestCaseProvider extends AutoTestCaseProviderBase
 
     private static List<LCTestCase> dataFileTestCases(String file) {
         // TODO: impl
-        return List.of(dummy, dummy);
+        return file.contains("01") ? List.of(dummy, dummy) : Collections.emptyList();
     }
 }

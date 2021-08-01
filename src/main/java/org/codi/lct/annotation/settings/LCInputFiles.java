@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  *
  * Note: using this annotation OVERRIDES (not append) the previous file list
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LCInputFiles {
 

@@ -1,9 +1,7 @@
 package org.codi.lct.core;
 
-import lombok.experimental.ExtensionMethod;
 import org.codi.lct.impl.AutoCustomTestCaseProvider;
 import org.codi.lct.impl.AutoDataFileTestCaseProvider;
-import org.codi.lct.impl.Util;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * Essentially, reads testcases from the file and uses the {@link LCExtension} to run the testcases
  */
 @ExtendWith(LCExtension.class)
-@ExtensionMethod(Util.class)
 public abstract class LCTester {
 
     @TestTemplate
