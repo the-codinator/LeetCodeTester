@@ -1,6 +1,5 @@
 package org.codi.lct.core;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.experimental.UtilityClass;
 import org.codi.lct.ds.TreeNode;
 import org.codi.lct.impl.helper.JacksonHelper;
@@ -20,7 +19,7 @@ public class LCUtil {
     public String serialize(Object obj) {
         try {
             return JacksonHelper.getObjectMapper().writeValueAsString(obj);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             throw new LCException("Error serializing object", e);
         }
     }
@@ -28,8 +27,16 @@ public class LCUtil {
     public <T> T deserialize(String str, Class<T> type) {
         try {
             return JacksonHelper.getObjectMapper().readValue(str, type);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             throw new LCException("Error deserializing string to " + type.getSimpleName(), e);
+        }
+    }
+
+    public <T> T convert(Object obj, Class<T> type) {
+        try {
+            return JacksonHelper.getObjectMapper().convertValue(obj, type);
+        } catch (Exception e) {
+            throw new LCException("Error converting to " + type.getSimpleName(), e);
         }
     }
 

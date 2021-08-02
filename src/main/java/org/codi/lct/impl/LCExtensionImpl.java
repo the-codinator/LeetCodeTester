@@ -43,7 +43,7 @@ public class LCExtensionImpl implements BeforeAllCallback, BeforeEachCallback, A
     @Override
     public void beforeAll(ExtensionContext context) {
         Class<?> testClass = context.getRequiredTestClass();
-        log.info("Testing class: " + testClass.getSimpleName());
+        log.info("Testing Class: " + testClass.getSimpleName());
         classConfig = ConfigHelper.BASE_CONFIG.withClass(testClass);
         solutionMethodConfigs = ReflectionHelper.findSolutionMethods(testClass)
             .stream()
@@ -66,9 +66,13 @@ public class LCExtensionImpl implements BeforeAllCallback, BeforeEachCallback, A
     @Override
     public void afterAll(ExtensionContext context) {
         if (!executedAtLeastOnce) {
-            throw new LCException("No tests executed!");
+            throw new LCException("No Tests Executed!");
         }
-        // TODO: summary & aggregations
+        if (results.stream().allMatch(LCTestCaseExecution::isSuccess)) {
+            log.info("All Test Cases Passed Successfully!");
+        } else {
+            log.error("There are test case failures...");
+        }
     }
 
     // ***** Parameter Resolvers ***** //
@@ -80,6 +84,6 @@ public class LCExtensionImpl implements BeforeAllCallback, BeforeEachCallback, A
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-        return extensionContext.getExecutor().wrapped();
+        return extensionContext.getExecutor().getProxy();
     }
 }

@@ -1,11 +1,13 @@
 package org.codi.lct.impl;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,13 @@ public final class LCExecutorImpl implements LCExecutor {
     @Getter
     private final List<LCTestCaseExecution> executions;
 
+    /**
+     * We do this so clients have a harder time gaining direct access to the underlying executor instance.
+     */
+    @Getter
+    private final LCExecutor proxy = (LCExecutor) Proxy.newProxyInstance(this.getClass().getClassLoader(),
+        new Class[]{LCExecutor.class}, (proxy, method, methodArgs) -> method.invoke(LCExecutorImpl.this, methodArgs));
+
     public LCExecutorImpl(List<LCConfig> configs, Object instance) {
         this.configs = configs;
         this.instance = instance;
@@ -39,6 +48,25 @@ public final class LCExecutorImpl implements LCExecutor {
     public void executeTestCase(@NonNull LCTestCase testCase) {
         this.testCase = testCase;
         configs.forEach(config -> executions.add(executeTestCaseInternal(config)));
+        if (configs.size() == 1) {
+            LCTestCaseExecution execution = executions.get(0);
+            if (!execution.isSuccess()) {
+                throw new LCException(
+                    "[Test Case Failed] Resolved Test Case - Input: " + execution.getTestCase().getInputs()
+                        + ", Expected: " + execution.getTestCase().getExpected() + ", Actual: "
+                        + execution.getActual());
+            }
+        } else {
+            String errors = executions.stream()
+                .filter(Predicate.not(LCTestCaseExecution::isSuccess))
+                .map(execution -> "[" + execution.getConfig().getSolutionMethod().getName()
+                    + "] Resolved Test Case - Input: " + execution.getTestCase().getInputs() + ", Expected: "
+                    + execution.getTestCase().getExpected() + ", Actual: " + execution.getActual())
+                .collect(Collectors.joining("\n"));
+            if (!errors.isEmpty()) {
+                throw new LCException("Test Case Failed!\n" + errors);
+            }
+        }
     }
 
     private LCTestCaseExecution executeTestCaseInternal(LCConfig config) {
@@ -105,26 +133,5 @@ public final class LCExecutorImpl implements LCExecutor {
     private boolean checkResult(Object expected, Object actual) {
         // TODO: impl advanced checker
         return Objects.equals(expected, actual);
-    }
-
-    public LCExecutor wrapped() {
-        return new LCExecutorWrapper(this);
-    }
-
-    /**
-     * We do this so clients have a harder time gaining direct access to the underlying executor instance
-     */
-    private static class LCExecutorWrapper implements LCExecutor {
-
-        private final Consumer<LCTestCase> delegate;
-
-        public LCExecutorWrapper(LCExecutorImpl executor) {
-            this.delegate = executor::executeTestCase;
-        }
-
-        @Override
-        public void executeTestCase(LCTestCase testCase) {
-            delegate.accept(testCase);
-        }
     }
 }

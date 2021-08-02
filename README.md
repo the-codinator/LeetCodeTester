@@ -5,7 +5,7 @@ A Java Testing Suite for [LeetCode][leetcode] syntax built over [JUnit 5][junit5
 Uses:
 
 - [Lombok][lombok] for some boilerplate
-- [Jackson][jackson] for Json parsing
+- [Jackson][jackson] for parsing
 - [Apache commons lang3][lang3] for reflection utilities
 - [Slf4J][slf4j] as the logging adapter
 
@@ -24,25 +24,22 @@ Include the following dependency in your pom
 </dependency>
 ```
 
-With the above dependency, you should be able to run individual tests easily via your favorite IDEs like IntelliJ,
+I am currently releasing to GitHub packages, so you would also need to add the required repository to your `settings.xml`.
+For quick setup, just copy the `.mvn` directory in this repo to the root of your project, and update the `settings.xml`
+file inside it, by replacing the username & password with your own GitHub credentials.
+Use a GitHub PAT as password via environment variables to avoid committing credentials to GitHub.
+
+Additionally, include any [SLF4J supported logger implementation](http://www.slf4j.org/faq.html#where_is_binding) dependencies for output.
+The tests here use [logback](https://mvnrepository.com/artifact/ch.qos.logback/logback-classic)
+with [this configuration](./src/test/resources/logback.xml)
+
+With the above configuration, you should be able to run individual tests easily via your favorite IDEs like IntelliJ,
 Eclipse, etc
-
-Optionally include a test runner plugin like surefire in your pom to automatically run tests on project build
-
-```xml
-<plugin>
-  <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>maven-surefire-plugin</artifactId>
-  <version>${surefire.version}</version>
-  <!-- checkout latest version for the plugin -->
-  <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
-</plugin>
-```
 
 ### Examples
 
 Many folks like me don't like to go through endless documentation. If you would rather look at some examples and make
-your own way, checkout the [tests and examples](./src/test/java)
+your own way, checkout the [examples](./src/test/java/org/codi/lct/example)
 
 ### Basic Usage
 
@@ -51,12 +48,12 @@ If there are multiple candidate methods, add the `@LCSolution` annotation to the
 
 Create test case file (`lct/org/example/MyClass.txt`) in your resources containing testcase(s).
 The file must be divided into 2 parts: input & output.
-The input section is the input for testcase(s) which follows the same format as LeetCode custom test cases input for problems.
+The first section is the input for testcase(s) which follows the same format as LeetCode custom test cases input for problems.
 The second part is the expected output, corresponding to each input test case.
-The 2 sections MUST BE SEPARATED by AT LEAST 3 BLANK LINES.
+While it isn't required, keep a few blank lines between the input and output to maintain distinction.
 This format is to allow easy copy-pasting between LeetCode's UI and the test file.
 
-Run class as a JUnit 5 test from your IDE / command line.
+Run the class as a JUnit 5 test from your IDE / via command line.
 
 ### Advanced Usage
 

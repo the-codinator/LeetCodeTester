@@ -44,8 +44,7 @@ public class ReflectionHelper {
             return methods;
         }
         // Not found
-        throw new LCException(
-            "No valid solution methods found, refer docs for class " + LCSolution.class.getSimpleName());
+        throw new LCException("Failed to identify solution methods, checkout @" + LCSolution.class.getSimpleName());
     }
 
     public List<Method> findPublicNonStaticMethods(Class<?> testClass) {

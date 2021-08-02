@@ -8,7 +8,7 @@ import org.codi.lct.core.LCTester;
 /**
  * This test demonstrates how you can define custom test cases from code, rather than using the data file
  *
- * TODO: Note: each test is run on a separate test instance
+ * Note: each test case is run on a separate test instance
  */
 public class Example02CustomTestCase extends LCTester {
 
