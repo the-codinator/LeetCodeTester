@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.codi.lct.core.LCException;
@@ -31,7 +30,9 @@ public final class AutoDataFileTestCaseProvider extends AutoTestCaseProviderBase
         int dataIdx = 1;
         for (String file : classConfig.getInputFiles()) {
             int testCaseIdx = 1;
-            for (LCTestCase testCase : dataFileTestCases(file, classConfig, inputSize)) {
+            List<LCTestCase> testCases = dataFileTestCases(file, classConfig, inputSize);
+            log.debug("Loaded data file [{}] test cases: {}", file, testCases);
+            for (LCTestCase testCase : testCases) {
                 testCaseCollector.accept(
                     generateDisplayName(classConfig.getInputFiles().size() > 1, dataIdx++, testCaseIdx++), testCase);
             }

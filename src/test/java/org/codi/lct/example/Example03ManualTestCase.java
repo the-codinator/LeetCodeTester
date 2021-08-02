@@ -1,11 +1,11 @@
 package org.codi.lct.example;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.codi.lct.annotation.LCSolution;
 import org.codi.lct.core.LCExecutor;
-import org.codi.lct.core.LCTestCase;
 import org.codi.lct.core.LCExtension;
+import org.codi.lct.core.LCTestCase;
 import org.codi.lct.core.LCTester;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,12 +26,12 @@ public class Example03ManualTestCase {
     @Test
     @DisplayName("My manual test runner")
     public void myManualTest(LCExecutor executor) {
-        executor.executeTestCase(LCTestCase.builder().input(List.of(new int[]{1, 2, 3, 4})).expected(10).build());
+        executor.executeTestCase(LCTestCase.builder().input(List.of(1, 2, 3)).expected(List.of(1, 4, 9)).build());
         // Additional tests ...
     }
 
     @LCSolution
-    public int sum(int[] nums) {
-        return Arrays.stream(nums).sum();
+    public List<Integer> squares(List<Integer> nums) {
+        return nums.stream().map(x -> x * x).collect(Collectors.toList());
     }
 }

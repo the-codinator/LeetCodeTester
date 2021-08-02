@@ -1,5 +1,6 @@
 package org.codi.lct.impl.helper;
 
+import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -23,6 +24,10 @@ public class ReflectionHelper {
 
     public boolean isStaticMethod(Method method) {
         return Modifier.isStatic(method.getModifiers());
+    }
+
+    public boolean hasGenericTypeParameters(GenericDeclaration declaration) {
+        return declaration.getTypeParameters().length > 0;
     }
 
     public List<Method> findSolutionMethods(Class<?> testClass) {
@@ -54,12 +59,16 @@ public class ReflectionHelper {
         return MethodUtils.getMethodsListWithAnnotation(testClass, LCTestCaseGenerator.class);
     }
 
+    public boolean hasReturnValue(Method method) {
+        return method.getReturnType() != Void.class;
+    }
+
     @SuppressWarnings("unchecked")
     public List<LCTestCase> validateAndInvokeTestCaseGeneratorMethod(Method method) {
         ValidationHelper.validateCustomTestCaseMethod(method);
         try {
             return (List<LCTestCase>) method.invoke(null);
-        } catch (IllegalAccessException e) {
+        } catch (IllegalAccessException | IllegalArgumentException e) {
             throw new LCException(
                 "Could not invoke @" + LCTestCaseGenerator.class.getSimpleName() + " method: " + method
                     + " - try checking Java encapsulation related issues");
@@ -69,7 +78,15 @@ public class ReflectionHelper {
         }
     }
 
-    public boolean hasReturnValue(Method method) {
-        return method.getReturnType() != Void.class;
+    public Object invokeSolutionMethod(Object instance, Method method, Object[] resolvedInputs) {
+        try {
+            return method.invoke(instance, resolvedInputs);
+        } catch (IllegalAccessException | IllegalArgumentException e) {
+            throw new LCException("Could not invoke @" + LCSolution.class.getSimpleName() + " method: " + method
+                + " - try checking Java encapsulation related issues");
+        } catch (InvocationTargetException e) {
+            throw new LCException("Error inside @" + LCSolution.class.getSimpleName() + " method: " + method,
+                e.getCause());
+        }
     }
 }

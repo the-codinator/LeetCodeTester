@@ -8,10 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import org.codi.lct.core.LCException;
 import org.codi.lct.ds.ListNode;
+import org.codi.lct.impl.helper.ConfigHelper;
 
 public class ListNodeSerializer extends StdSerializer<ListNode> {
 
-    private static final int threshold = 10000;
+    private static final int threshold = ConfigHelper.BASE_CONFIG.getCustomSerializationThreshold() > 0
+        ? ConfigHelper.BASE_CONFIG.getCustomSerializationThreshold() : Integer.MAX_VALUE;
 
     protected ListNodeSerializer() {
         super(ListNode.class);
@@ -28,7 +30,6 @@ public class ListNodeSerializer extends StdSerializer<ListNode> {
             list.add(head.val);
             head = head.next;
             if (list.size() > threshold) {
-                // TODO: Enhancement: Put in a configuration to skip these kind of checks (may be skip if TLE enabled?)
                 throw new LCException("More than " + threshold + " items in list... possible cycle ??");
             }
         }

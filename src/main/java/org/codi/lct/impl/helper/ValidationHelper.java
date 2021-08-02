@@ -20,6 +20,10 @@ public class ValidationHelper {
             throw new LCException(
                 "@" + LCSolution.class.getSimpleName() + " method must be public & non-static: " + method);
         }
+        if (method.hasGenericTypeParameters()) {
+            throw new LCException(
+                "@" + LCSolution.class.getSimpleName() + " method must not have generic type parameters: " + method);
+        }
     }
 
     public void validateMultipleSolutionMethods(List<Method> methods) {
@@ -37,13 +41,17 @@ public class ValidationHelper {
                     + " methods - all method signatures must match");
             }
         }
-        // TODO: ensure equal length param list, non-void return type
     }
 
     public void validateCustomTestCaseMethod(Method method) {
         if (!method.isPublicMethod() || !method.isStaticMethod()) {
             throw new LCException(
                 "@" + LCTestCaseGenerator.class.getSimpleName() + " method must be public & static: " + method);
+        }
+        if (method.hasGenericTypeParameters()) {
+            throw new LCException(
+                "@" + LCTestCaseGenerator.class.getSimpleName() + " method must not have generic type parameters: "
+                    + method);
         }
         if (method.getParameterCount() != 0) {
             throw new LCException("@" + LCTestCaseGenerator.class.getSimpleName() + " method cannot accept parameters");

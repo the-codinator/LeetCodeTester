@@ -11,7 +11,8 @@ public class LCTestCaseExecution {
     LCConfig config;
     LCTestCase testCase;
     Object testInstance;
-    int start;
-    int end;
+    long start;
+    long end;
     Object actual;
+    boolean success;
 }

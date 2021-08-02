@@ -16,10 +16,10 @@ public class LCConfig {
 
     Class<?> testClass;
     Method solutionMethod;
-    boolean trackExecutionTime; // TODO: impl, check if Junit provides ootb timing of tests, must include instantiation
-    boolean crashOnFailure; // TODO: impl, check if Junit provides ootb setting
+    boolean trackExecutionTime;
     boolean allowMissingExpectedValues; // TODO: impl
     int executionTimeLimit; // TODO: impl, JUnit does have something around timeout for tests
+    int customSerializationThreshold;
     boolean warnOnEmptyOrMissingTestFiles;
     List<String> inputFiles;
 

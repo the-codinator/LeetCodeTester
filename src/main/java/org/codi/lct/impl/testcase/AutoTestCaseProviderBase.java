@@ -7,7 +7,6 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.Value;
-import lombok.extern.slf4j.Slf4j;
 import org.codi.lct.core.LCTestCase;
 import org.codi.lct.data.LCConfig;
 import org.codi.lct.impl.helper.ConfigHelper;

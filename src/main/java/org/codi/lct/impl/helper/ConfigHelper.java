@@ -30,9 +30,10 @@ public class ConfigHelper {
         Properties props = FileHelper.loadProperties(null, "lc-tester.properties");
         BASE_CONFIG = LCConfig.builder()
             .trackExecutionTime(getBooleanProperty(props, LCConfig.Fields.trackExecutionTime, false))
-            .crashOnFailure(getBooleanProperty(props, LCConfig.Fields.crashOnFailure, false))
             .allowMissingExpectedValues(getBooleanProperty(props, LCConfig.Fields.allowMissingExpectedValues, false))
             .executionTimeLimit(getIntegerProperty(props, LCConfig.Fields.executionTimeLimit, 0))
+            .customSerializationThreshold(
+                getIntegerProperty(props, LCConfig.Fields.customSerializationThreshold, 10000))
             .inputFiles(Collections.singletonList(""))
             .warnOnEmptyOrMissingTestFiles(false)
             .build();

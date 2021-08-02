@@ -16,8 +16,8 @@ import java.lang.annotation.Target;
 public @interface LCInputFiles {
 
     /**
-     * Empty string represents the default file path. To include the default path in a custom list, include {@code ""} in
-     * the file list.
+     * Empty string represents the default file path. To include the default path in a custom list, include {@code ""}
+     * in the file list.
      *
      * Default path is the "lct" directory under classpath resources with the same name or path as the fully qualified
      * class name

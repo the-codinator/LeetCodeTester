@@ -6,12 +6,17 @@ import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
 
+/**
+ * Defines a test case based on expected output & provided inputs.
+ * Inputs can be in any format, and the executor will attempt to convert it to the right format prior to execution.
+ */
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class LCTestCase {
 
     Object expected;
-    @Singular List<Object> inputs;
+    @Singular
+    List<Object> inputs;
 
     public LCTestCase(Object expected, List<Object> inputs) {
         this.expected = expected;
