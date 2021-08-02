@@ -1,4 +1,4 @@
-package org.codi.lct.impl;
+package org.codi.lct.impl.helper;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -20,6 +20,24 @@ public class ValidationHelper {
             throw new LCException(
                 "@" + LCSolution.class.getSimpleName() + " method must be public & non-static: " + method);
         }
+    }
+
+    public void validateMultipleSolutionMethods(List<Method> methods) {
+        if (methods.size() < 2) {
+            return;
+        }
+        int count = -1;
+        boolean ret = false;
+        for (Method method : methods) {
+            if (count < 0) {
+                count = method.getParameterCount();
+                ret = method.hasReturnValue();
+            } else if (method.getParameterCount() != count || method.hasReturnValue() != ret) {
+                throw new LCException("Incompatible @" + LCSolution.class.getSimpleName()
+                    + " methods - all method signatures must match");
+            }
+        }
+        // TODO: ensure equal length param list, non-void return type
     }
 
     public void validateCustomTestCaseMethod(Method method) {

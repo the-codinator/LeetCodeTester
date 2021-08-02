@@ -1,11 +1,11 @@
-package org.codi.lct.impl;
+package org.codi.lct.impl.helper;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
-import lombok.experimental.ExtensionMethod;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.codi.lct.annotation.settings.LCAllowMissingExpectedValues;
@@ -18,7 +18,6 @@ import org.codi.lct.data.LCConfig.LCConfigBuilder;
 
 @Slf4j
 @UtilityClass
-@ExtensionMethod(Util.class)
 public class ConfigHelper {
 
     /**
@@ -30,10 +29,10 @@ public class ConfigHelper {
         // Load default properties
         Properties props = FileHelper.loadProperties(null, "lc-tester.properties");
         BASE_CONFIG = LCConfig.builder()
-            .trackExecutionTime(props.getBooleanProperty(LCConfig.Fields.trackExecutionTime, false))
-            .crashOnFailure(props.getBooleanProperty(LCConfig.Fields.crashOnFailure, false))
-            .allowMissingExpectedValues(props.getBooleanProperty(LCConfig.Fields.allowMissingExpectedValues, false))
-            .executionTimeLimit(props.getIntegerProperty(LCConfig.Fields.executionTimeLimit, 0))
+            .trackExecutionTime(getBooleanProperty(props, LCConfig.Fields.trackExecutionTime, false))
+            .crashOnFailure(getBooleanProperty(props, LCConfig.Fields.crashOnFailure, false))
+            .allowMissingExpectedValues(getBooleanProperty(props, LCConfig.Fields.allowMissingExpectedValues, false))
+            .executionTimeLimit(getIntegerProperty(props, LCConfig.Fields.executionTimeLimit, 0))
             .inputFiles(Collections.singletonList(""))
             .warnOnEmptyOrMissingTestFiles(false)
             .build();
@@ -68,5 +67,13 @@ public class ConfigHelper {
             builder.warnOnEmptyOrMissingTestFiles(true).inputFiles(Arrays.asList(files));
         }
         return builder.build();
+    }
+
+    private boolean getBooleanProperty(Properties props, String key, boolean fallback) {
+        return Optional.ofNullable(props.getProperty(key)).map(Boolean::parseBoolean).orElse(fallback);
+    }
+
+    private int getIntegerProperty(Properties props, String key, int fallback) {
+        return Optional.ofNullable(props.getProperty(key)).map(Integer::parseInt).orElse(fallback);
     }
 }

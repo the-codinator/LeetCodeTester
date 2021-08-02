@@ -1,4 +1,4 @@
-package org.codi.lct.impl;
+package org.codi.lct.impl.helper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,6 +30,7 @@ public class ReflectionHelper {
         List<Method> methods = MethodUtils.getMethodsListWithAnnotation(testClass, LCSolution.class);
         if (!methods.isEmpty()) {
             methods.forEach(ValidationHelper::validateSolutionMethod);
+            ValidationHelper.validateMultipleSolutionMethods(methods);
             return methods;
         }
         // Single "public" & "non-static" method
@@ -50,14 +51,12 @@ public class ReflectionHelper {
     }
 
     public List<Method> findTestCaseGeneratorMethods(Class<?> testClass) {
-        // LCTestCase annotated methods
-        List<Method> methods = MethodUtils.getMethodsListWithAnnotation(testClass, LCTestCaseGenerator.class);
-        methods.forEach(ValidationHelper::validateCustomTestCaseMethod);
-        return methods;
+        return MethodUtils.getMethodsListWithAnnotation(testClass, LCTestCaseGenerator.class);
     }
 
     @SuppressWarnings("unchecked")
-    List<LCTestCase> invokeTestCaseGeneratorMethod(Method method) {
+    public List<LCTestCase> validateAndInvokeTestCaseGeneratorMethod(Method method) {
+        ValidationHelper.validateCustomTestCaseMethod(method);
         try {
             return (List<LCTestCase>) method.invoke(null);
         } catch (IllegalAccessException e) {
@@ -68,5 +67,9 @@ public class ReflectionHelper {
             throw new LCException("Error inside @" + LCTestCaseGenerator.class.getSimpleName() + " method: " + method,
                 e.getCause());
         }
+    }
+
+    public boolean hasReturnValue(Method method) {
+        return method.getReturnType() != Void.class;
     }
 }

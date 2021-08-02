@@ -1,4 +1,4 @@
-package org.codi.lct.impl;
+package org.codi.lct.impl.testcase;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.codi.lct.core.LCTestCase;
 import org.codi.lct.data.LCConfig;
+import org.codi.lct.impl.helper.ReflectionHelper;
 
 /**
  * Discovers Data File & Custom Tests
@@ -18,6 +19,7 @@ public final class AutoCustomTestCaseProvider extends AutoTestCaseProviderBase {
     @Override
     public void generateTestCases(LCConfig classConfig, BiConsumer<String, LCTestCase> testCaseCollector) {
         List<LCTestCase> testCases = customTestCases(classConfig.getTestClass());
+        log.debug("Loaded custom test cases: {}", testCases);
         int idx = 1;
         for (LCTestCase testCase : testCases) {
             testCaseCollector.accept(generateDisplayName(testCases.size() > 1, idx++), testCase);
@@ -38,7 +40,7 @@ public final class AutoCustomTestCaseProvider extends AutoTestCaseProviderBase {
             return Collections.emptyList();
         }
         return customs.stream()
-            .map(ReflectionHelper::invokeTestCaseGeneratorMethod)
+            .map(ReflectionHelper::validateAndInvokeTestCaseGeneratorMethod)
             .flatMap(List::stream)
             .collect(Collectors.toList());
     }

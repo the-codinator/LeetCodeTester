@@ -1,4 +1,4 @@
-package org.codi.lct.impl;
+package org.codi.lct.impl.testcase;
 
 import lombok.Value;
 import org.codi.lct.core.LCTestCase;
