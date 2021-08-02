@@ -1,5 +1,6 @@
 package org.codi.lct.impl;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,8 +16,10 @@ import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolver;
+import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 
 /**
  * Extension that runs LC tests. This class handles the test lifecycle and does most of the heavy lifting.
@@ -26,8 +29,8 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  */
 @Slf4j
 @ExtensionMethod({ConfigHelper.class, ValidationHelper.class, JunitHelper.class})
-public class LCExtensionImpl implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback, AfterAllCallback,
-    ParameterResolver {
+public class LCExtensionImpl implements BeforeAllCallback, BeforeEachCallback, InvocationInterceptor, AfterEachCallback,
+    AfterAllCallback, ParameterResolver {
 
     private LCConfig classConfig;
     private List<LCConfig> solutionMethodConfigs;
@@ -52,6 +55,23 @@ public class LCExtensionImpl implements BeforeAllCallback, BeforeEachCallback, A
         executedAtLeastOnce = true;
         // Prep new executor for each test case
         context.createExecutor(new LCExecutorImpl(solutionMethodConfigs, context.getRequiredTestInstance()));
+    }
+
+    @Override
+    public void interceptTestTemplateMethod(Invocation<Void> invocation,
+        ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+        if (!invocationContext.getExecutable().isLCTestMethod()) {
+            // Ignore if it's some other @TestTemplate
+            invocation.proceed();
+            return;
+        }
+        Object result;
+        try {
+            result = invocation.proceed();
+        } catch (Throwable e) {
+            throw new LCException("Error in test method execution", e);
+        }
+        extensionContext.getExecutor().checkTestResult(result);
     }
 
     @Override

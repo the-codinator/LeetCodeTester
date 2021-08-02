@@ -14,6 +14,7 @@ import org.codi.lct.core.LCTester;
  */
 public class Example01ASimpleFirstExample extends LCTester {
 
+    // @LCSolution -> Optional annotation since we have a single public non-static method
     public int sum(int[] nums) {
         return Arrays.stream(nums).sum();
     }

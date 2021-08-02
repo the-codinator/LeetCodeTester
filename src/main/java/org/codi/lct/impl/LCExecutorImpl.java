@@ -38,6 +38,10 @@ public final class LCExecutorImpl implements LCExecutor {
         // TODO: impl: checker
     }
 
+    public void checkTestResult(Object actual) {
+        System.out.println("123123: " + actual);
+    }
+
     public LCExecutor wrapped() {
         return new LCExecutorWrapper(this);
     }

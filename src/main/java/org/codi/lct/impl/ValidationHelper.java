@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.experimental.ExtensionMethod;
 import lombok.experimental.UtilityClass;
 import org.codi.lct.annotation.LCSolution;
+import org.codi.lct.annotation.LCTest;
 import org.codi.lct.annotation.LCTestCaseGenerator;
 import org.codi.lct.core.LCException;
 import org.codi.lct.core.LCTestCase;
@@ -39,5 +40,9 @@ public class ValidationHelper {
             throw new LCException("@" + LCTestCaseGenerator.class.getSimpleName() + " method must return List<"
                 + LCTestCase.class.getSimpleName() + ">");
         }
+    }
+
+    public boolean isLCTestMethod(Method method) {
+        return method.isAnnotationPresent(LCTest.class);
     }
 }
