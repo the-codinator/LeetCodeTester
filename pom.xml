@@ -7,7 +7,7 @@
   <name>LeetCode Tester</name>
   <groupId>org.codi</groupId>
   <artifactId>leetcode-tester</artifactId>
-  <version>0.0.3-SNAPSHOT</version>
+  <version>0.0.4-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <developers>
