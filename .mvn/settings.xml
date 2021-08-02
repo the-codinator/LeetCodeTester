@@ -1,0 +1,36 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+  <activeProfiles>
+    <activeProfile>release</activeProfile>
+  </activeProfiles>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <repositories>
+        <repository>
+          <id>github-codi</id>
+          <url>https://maven.pkg.github.com/the-codinator/*</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>daily</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+
+  <servers>
+    <server>
+      <id>github-codi</id>
+      <username>the-codinator</username>
+      <password>${env.GITHUB_PAT_CODI}</password>
+    </server>
+  </servers>
+</settings>

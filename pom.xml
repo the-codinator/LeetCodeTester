@@ -10,8 +10,17 @@
   <version>0.0.1</version>
   <packaging>jar</packaging>
 
+  <developers>
+    <developer>
+      <id>the-codinator</id>
+      <url>https://github.com/the-codinator</url>
+    </developer>
+  </developers>
+
   <scm>
     <url>https://github.com/the-codinator/LeetCodeTester.git</url>
+    <connection>scm:git:https://github.com/the-codinator/LeetCodeTester.git</connection>
+    <developerConnection>scm:git:https://github.com/the-codinator/LeetCodeTester.git</developerConnection>
   </scm>
 
   <properties>
@@ -24,7 +33,7 @@
     <plugin.enforcer.version>3.0.0-M3</plugin.enforcer.version>
     <plugin.versions.version>2.8.1</plugin.versions.version>
     <plugin.checkstyle.version>3.1.2</plugin.checkstyle.version>
-    <config.checkstyle.version>8.44</config.checkstyle.version>
+    <config.checkstyle.version>8.45</config.checkstyle.version>
     <plugin.javadoc.version>3.3.0</plugin.javadoc.version>
     <plugin.sources.version>3.2.1</plugin.sources.version>
     <plugin.moditect.version>1.0.0.RC1</plugin.moditect.version>
@@ -184,10 +193,16 @@
           <doclint>-missing</doclint>
         </configuration>
       </plugin>
-
-      <!-- TODO: Release plugin configuration -->
     </plugins>
   </build>
+
+  <distributionManagement>
+    <repository>
+      <id>github-codi</id>
+      <name>Codi GitHub Maven Packages Repository</name>
+      <url>https://maven.pkg.github.com/the-codinator/LeetCodeTester</url>
+    </repository>
+  </distributionManagement>
 
   <dependencies>
     <!-- Json -->
