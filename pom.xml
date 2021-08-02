@@ -184,9 +184,9 @@
           <doclint>-missing</doclint>
         </configuration>
       </plugin>
-    </plugins>
 
-    <!-- TODO: Release plugin configuration -->
+      <!-- TODO: Release plugin configuration -->
+    </plugins>
   </build>
 
   <dependencies>
