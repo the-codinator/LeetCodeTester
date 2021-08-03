@@ -4,8 +4,11 @@ import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
@@ -14,6 +17,7 @@ import org.codi.lct.annotation.LCSolution;
 import org.codi.lct.annotation.LCTestCaseGenerator;
 import org.codi.lct.core.LCException;
 import org.codi.lct.core.LCTestCase;
+import org.codi.lct.impl.Constants;
 
 @UtilityClass
 public class ReflectionHelper {
@@ -55,7 +59,18 @@ public class ReflectionHelper {
     }
 
     public List<Method> findTestCaseGeneratorMethods(Class<?> testClass) {
-        return MethodUtils.getMethodsListWithAnnotation(testClass, LCTestCaseGenerator.class);
+        List<Method> methods = MethodUtils.getMethodsListWithAnnotation(testClass, LCTestCaseGenerator.class);
+        Optional<Method> autoMethod = Arrays.stream(testClass.getDeclaredMethods())
+            .filter(ReflectionHelper::isPublicMethod)
+            .filter(ReflectionHelper::isStaticMethod)
+            .filter(m -> Constants.DEFAULT_TEST_CASE_GENERATOR_METHOD_NAME.equals(m.getName()))
+            .filter(m -> m.getParameterCount() == 0)
+            .findAny();
+        if (autoMethod.isPresent()) {
+            methods = new ArrayList<>(methods);
+            methods.add(autoMethod.get());
+        }
+        return methods;
     }
 
     public boolean hasReturnValue(Method method) {
@@ -66,7 +81,9 @@ public class ReflectionHelper {
     public List<LCTestCase> validateAndInvokeTestCaseGeneratorMethod(Method method) {
         ValidationHelper.validateCustomTestCaseMethod(method);
         try {
-            return (List<LCTestCase>) method.invoke(null);
+            Object result = method.invoke(null);
+            return result instanceof LCTestCase ? Collections.singletonList((LCTestCase) result)
+                : (List<LCTestCase>) result;
         } catch (IllegalAccessException | IllegalArgumentException e) {
             throw new LCException(
                 "Could not invoke @" + LCTestCaseGenerator.class.getSimpleName() + " method: " + method

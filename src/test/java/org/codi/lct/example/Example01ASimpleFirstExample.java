@@ -9,11 +9,10 @@ import org.codi.lct.core.LCTester;
  *
  * Test cases are loaded automatically from the TestCase data file at {@code
  * resources/lct/org/codi/lct/example/Example01ASimpleFirstExample}
- *
- * {@link LCSolution} annotation is not required since we have a single public non-static method
  */
 public class Example01ASimpleFirstExample extends LCTester {
 
+    @LCSolution
     public int sum(int[] nums) {
         return Arrays.stream(nums).sum();
     }

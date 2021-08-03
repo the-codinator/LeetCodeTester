@@ -1,8 +1,6 @@
 package org.codi.lct.example;
 
-import java.util.List;
 import org.codi.lct.annotation.LCSolution;
-import org.codi.lct.annotation.LCTestCaseGenerator;
 import org.codi.lct.annotation.settings.LCTrackExecutionTime;
 import org.codi.lct.core.LCTestCase;
 import org.codi.lct.core.LCTester;
@@ -15,9 +13,9 @@ import org.codi.lct.core.LCTester;
 @LCTrackExecutionTime
 public class Example05TimedExecutionComparison extends LCTester {
 
-    @LCTestCaseGenerator
-    public static List<LCTestCase> customTestCases() {
-        return List.of(new LCTestCase(1_000_000_001, 1_000_000_000, 1));
+    // We can also return a single test case instead of a list
+    public static LCTestCase testCases() {
+        return new LCTestCase(1_000_000_001, 1_000_000_000, 1);
     }
 
     @LCSolution

@@ -1,2 +1,0 @@
-Just treat everything as Json and create a module for custom deserializers
-deserialize inputs to their required type, deserialize output to its required type and compare function result n output
