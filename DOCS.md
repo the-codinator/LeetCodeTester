@@ -86,8 +86,10 @@ This is the recommended and simplest approach for testing your solution.
 Utility
 ---
 
-Standard data structures used by LeetCode are available for direct use [here](./src/main/java/org/codi/lct/ds).
+Standard data structures used by LeetCode are available for direct use int the [ds package](./src/main/java/org/codi/lct/ds).
 They are fully integrated with this framework for parsing input/output & checking equality.
+Additional (non-standard) data structures are also provided in the [ds.extra package](./src/main/java/org/codi/lct/ds/extra).
+These are *strictly* for utility purposes only. They are *not* integrated with this framework.
 
 [`LCUtil`](./src/main/java/org/codi/lct/core/LCUtil.java) provides some utility functions for debugging and test boilerplate.
 
