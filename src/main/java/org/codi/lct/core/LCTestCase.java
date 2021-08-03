@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
+import org.codi.lct.impl.helper.JacksonHelper;
 
 /**
  * Defines a test case based on expected output & provided inputs.
@@ -26,5 +27,16 @@ public class LCTestCase {
     public LCTestCase(Object expected, Object... inputs) {
         this.expected = expected;
         this.inputs = inputs == null ? Collections.emptyList() : List.of(inputs);
+    }
+
+    /**
+     * A convenient way of creating a test case using string format without a data file
+     *
+     * @param expected stringified expected value
+     * @param inputs stringified inputs
+     * @return parsed test case
+     */
+    public static LCTestCase parse(String expected, String inputs) {
+        return new LCTestCase(LCUtil.deserialize(expected, Object.class), JacksonHelper.readAllValues(inputs));
     }
 }

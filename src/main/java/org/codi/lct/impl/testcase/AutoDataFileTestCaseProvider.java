@@ -77,7 +77,7 @@ public final class AutoDataFileTestCaseProvider extends AutoTestCaseProviderBase
             List<Object> values = stream.readAllValues();
             return parseTestCases(values, inputSize);
         } catch (Exception e) {
-            throw new LCException("Error reading test cases from file: " + file, e);
+            throw new LCException("Error parsing test cases from file: " + file, e);
         }
     }
 

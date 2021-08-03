@@ -8,13 +8,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
+import org.codi.lct.core.LCException;
 
 @UtilityClass
 public class JacksonHelper {
@@ -31,13 +35,22 @@ public class JacksonHelper {
         .enable(SerializationFeature.INDENT_OUTPUT)
         .build();
 
-    public List<Object> readAllValues(InputStream input) throws IOException {
-        List<Object> values = new ArrayList<>();
-        for (MappingIterator<Object> iterator = objectMapper.readValues(objectMapper.createParser(input), Object.class);
-            iterator.hasNextValue(); ) {
-            values.add(iterator.nextValue());
+    public List<Object> readAllValues(String input) {
+        return input == null ? Collections.emptyList()
+            : readAllValues(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    public List<Object> readAllValues(InputStream input) {
+        try {
+            List<Object> values = new ArrayList<>();
+            for (MappingIterator<Object> iterator = objectMapper.readValues(objectMapper.createParser(input),
+                Object.class); iterator.hasNextValue(); ) {
+                values.add(iterator.nextValue());
+            }
+            return values;
+        } catch (IOException e) {
+            throw new LCException("Error reading values from input stream", e);
         }
-        return values;
     }
 
     public Object resolveValue(Object rawValue, Class<?> targetClass, Type targetType) {

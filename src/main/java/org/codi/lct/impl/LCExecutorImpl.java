@@ -1,11 +1,11 @@
 package org.codi.lct.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -36,7 +36,13 @@ public final class LCExecutorImpl implements LCExecutor {
      */
     @Getter
     private final LCExecutor proxy = (LCExecutor) Proxy.newProxyInstance(this.getClass().getClassLoader(),
-        new Class[]{LCExecutor.class}, (proxy, method, methodArgs) -> method.invoke(LCExecutorImpl.this, methodArgs));
+        new Class[]{LCExecutor.class}, (proxy, method, methodArgs) -> {
+            try {
+                return method.invoke(LCExecutorImpl.this, methodArgs);
+            } catch (InvocationTargetException e) {
+                throw e.getCause();
+            }
+        });
 
     public LCExecutorImpl(List<LCConfig> configs, Object instance) {
         this.configs = configs;
@@ -78,7 +84,7 @@ public final class LCExecutorImpl implements LCExecutor {
         long start = System.nanoTime();
         Object actual = ReflectionHelper.invokeSolutionMethod(instance, config.getSolutionMethod(), params);
         long end = System.nanoTime();
-        boolean success = checkResult(returnValue, actual);
+        boolean success = checker.checkAnswer(returnValue, actual);
         LCTestCaseExecution execution = LCTestCaseExecution.builder()
             .config(config)
             .testCase(resolvedTestCase)
@@ -128,10 +134,5 @@ public final class LCExecutorImpl implements LCExecutor {
             throw new LCException("Failed to resolve return value - method: " + method + ", conversion target type: "
                 + method.getGenericReturnType().getTypeName() + " raw value: " + rawValue, e);
         }
-    }
-
-    private boolean checkResult(Object expected, Object actual) {
-        // TODO: impl advanced checker
-        return Objects.equals(expected, actual);
     }
 }

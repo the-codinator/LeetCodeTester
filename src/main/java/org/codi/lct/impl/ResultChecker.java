@@ -1,11 +1,11 @@
 package org.codi.lct.impl;
 
 import java.util.Objects;
-import org.codi.lct.data.LCTestCaseExecution;
 
 public class ResultChecker {
 
-    public boolean checkAnswer(LCTestCaseExecution execution) {
-        return Objects.equals(execution.getTestCase().getExpected(), execution.getActual());
+    public boolean checkAnswer(Object expected, Object actual) {
+        // TODO: impl advanced checker
+        return Objects.equals(expected, actual);
     }
 }
