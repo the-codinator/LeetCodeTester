@@ -24,7 +24,8 @@ public class Example02CustomTestCase extends LCTester {
             LCTestCase.builder().inputs(List.of(2, 3)).expected(5).build(), // using list input builder
             new LCTestCase(11, 5, 6), // using varargs input constructor
             new LCTestCase(11, List.of(5, 6)), // using list input constructor
-            LCTestCase.parse("333", "111 222") // parsing from string (similar to data file)
+            LCTestCase.parse("333", "111 222"), // parsing from string (similar to data file)
+            LCTestCase.parse("111 222 333") // parsing from single string (note: inputs before expected here)
         );
     }
 

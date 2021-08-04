@@ -39,4 +39,15 @@ public class LCTestCase {
     public static LCTestCase parse(String expected, String inputs) {
         return new LCTestCase(LCUtil.deserialize(expected, Object.class), JacksonHelper.readAllValues(inputs));
     }
+
+    /**
+     * A convenient way of creating a test case using string format without a data file
+     *
+     * @param inputsAndExpected stringified inputs followed by expected value
+     * @return parsed test case
+     */
+    public static LCTestCase parse(String inputsAndExpected) {
+        List<Object> items = JacksonHelper.readAllValues(inputsAndExpected);
+        return new LCTestCase(items.remove(items.size() - 1), items);
+    }
 }
