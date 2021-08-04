@@ -1,6 +1,6 @@
 # LeetCodeTester
 
-A Java Testing Suite for [LeetCode][leetcode] syntax built over [JUnit 5][junit5] and [AssertJ][assertj].
+A Java Testing Suite for [LeetCode][leetcode] syntax built over [JUnit 5][junit5].
 
 Uses:
 
