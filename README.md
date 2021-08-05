@@ -65,6 +65,12 @@ Create Git Issues and PRs
 
 Please be as descriptive as necessary, and provide reproduction steps / explanations / code snippets wherever possible
 
+### Local Project Setup
+
+Well, it works like any other maven + java project...
+
+How to compile ? Run `make build`
+
 ## Disclaimer
 
 I am in no way affiliated to LeetCode. I do not have anything to do with <leetcode.com>. For all means and purposes,
