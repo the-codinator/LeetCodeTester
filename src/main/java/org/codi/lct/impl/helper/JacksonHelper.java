@@ -8,11 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,19 +34,28 @@ public class JacksonHelper {
         .build();
 
     public List<Object> readAllValues(String input) {
-        return input == null ? Collections.emptyList()
-            : readAllValues(new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8)));
+        try {
+            return input == null ? Collections.emptyList()
+                : readAllValues(objectMapper.readValues(objectMapper.createParser(input), Object.class));
+        } catch (IOException e) {
+            throw new LCException("Error reading values from input string", e);
+        }
     }
 
     public List<Object> readAllValues(InputStream input) {
         try {
-            List<Object> values = new ArrayList<>();
-            for (MappingIterator<Object> iterator = objectMapper.readValues(objectMapper.createParser(input),
-                Object.class); iterator.hasNextValue(); ) {
-                values.add(iterator.nextValue());
-            }
-            return values;
+            return readAllValues(objectMapper.readValues(objectMapper.createParser(input), Object.class));
         } catch (IOException e) {
+            throw new LCException("Error reading values from input stream", e);
+        }
+    }
+
+    public List<Object> readAllValues(MappingIterator<Object> iterator) {
+        try {
+            List<Object> values = new ArrayList<>();
+            iterator.forEachRemaining(values::add);
+            return values;
+        } catch (Exception e) {
             throw new LCException("Error reading values from input stream", e);
         }
     }
