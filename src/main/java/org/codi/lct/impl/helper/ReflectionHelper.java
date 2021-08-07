@@ -94,15 +94,14 @@ public class ReflectionHelper {
         }
     }
 
-    public Object invokeSolutionMethod(Object instance, Method method, Object[] resolvedInputs) {
+    public Object invokeSolutionMethod(Object instance, Method method, Object[] resolvedInputs) throws Throwable {
         try {
             return method.invoke(instance, resolvedInputs);
         } catch (IllegalAccessException | IllegalArgumentException e) {
             throw new LCException("Could not invoke @" + LCSolution.class.getSimpleName() + " method: " + method
                 + " - try checking Java encapsulation related issues");
         } catch (InvocationTargetException e) {
-            throw new LCException("Error inside @" + LCSolution.class.getSimpleName() + " method: " + method,
-                e.getCause());
+            throw e.getCause();
         }
     }
 }

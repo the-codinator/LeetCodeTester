@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.codi.lct.core.LCException;
 import org.codi.lct.core.LCExecutor;
 import org.codi.lct.core.LCTestCase;
+import org.codi.lct.core.LCUtil;
 import org.codi.lct.data.LCConfig;
 import org.codi.lct.data.LCTestCaseExecution;
 import org.codi.lct.impl.helper.JacksonHelper;
@@ -57,17 +58,13 @@ public final class LCExecutorImpl implements LCExecutor {
         if (configs.size() == 1) {
             LCTestCaseExecution execution = executions.get(0);
             if (!execution.isSuccess()) {
-                throw new LCException(
-                    "[Test Case Failed] Resolved Test Case - Input: " + execution.getTestCase().getInputs()
-                        + ", Expected: " + execution.getTestCase().getExpected() + ", Actual: "
-                        + execution.getActual());
+                throw new LCException("[Test Case Failed] " + generateTestCaseFailureMessage(execution));
             }
         } else {
             String errors = executions.stream()
                 .filter(Predicate.not(LCTestCaseExecution::isSuccess))
-                .map(execution -> "[" + execution.getConfig().getSolutionMethod().getName()
-                    + "] Resolved Test Case - Input: " + execution.getTestCase().getInputs() + ", Expected: "
-                    + execution.getTestCase().getExpected() + ", Actual: " + execution.getActual())
+                .map(execution -> "[" + execution.getConfig().getSolutionMethod().getName() + "] "
+                    + generateTestCaseFailureMessage(execution))
                 .collect(Collectors.joining("\n"));
             if (!errors.isEmpty()) {
                 throw new LCException("Test Case Failed!\n" + errors);
@@ -82,7 +79,14 @@ public final class LCExecutorImpl implements LCExecutor {
         LCTestCase resolvedTestCase = LCTestCase.builder().inputs(Arrays.asList(params)).expected(returnValue).build();
         // Run test case
         long start = System.nanoTime();
-        Object actual = ReflectionHelper.invokeSolutionMethod(instance, config.getSolutionMethod(), params);
+        Object actual;
+        try {
+            actual = ReflectionHelper.invokeSolutionMethod(instance, config.getSolutionMethod(), params);
+        } catch (LCException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw new LCException("Exception inside Solution method: " + config.getSolutionMethod(), e);
+        }
         long end = System.nanoTime();
         boolean success = checker.checkAnswer(returnValue, actual);
         LCTestCaseExecution execution = LCTestCaseExecution.builder()
@@ -100,6 +104,12 @@ public final class LCExecutorImpl implements LCExecutor {
                 (end - start + 500_000) / 1_000_000);
         }
         return execution;
+    }
+
+    private static String generateTestCaseFailureMessage(LCTestCaseExecution execution) {
+        return "Resolved Test Case - Input: " + LCUtil.serialize(execution.getTestCase().getInputs()) + ", Expected: "
+            + LCUtil.serialize(execution.getTestCase().getExpected()) + ", Actual: " + LCUtil.serialize(
+            execution.getActual());
     }
 
     private static Object[] resolveParameterValues(Method method, List<Object> rawValues) {

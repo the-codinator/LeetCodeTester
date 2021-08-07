@@ -25,7 +25,7 @@ public class Example05TimedExecutionComparison extends LCTester {
     }
 
     @LCSolution
-    public int sum2(int a, int b) throws InterruptedException {
+    public int sum2(int a, int b) {
         while (a > 0) {
             b++;
             a--;
