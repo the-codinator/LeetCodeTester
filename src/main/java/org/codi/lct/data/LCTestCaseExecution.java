@@ -15,4 +15,5 @@ public class LCTestCaseExecution {
     long end;
     Object actual;
     boolean success;
+    Throwable exception;
 }

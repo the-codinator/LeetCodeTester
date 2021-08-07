@@ -18,7 +18,7 @@ public class LCConfig {
     Method solutionMethod;
     boolean trackExecutionTime;
     boolean allowMissingExpectedValues; // TODO: impl
-    int executionTimeLimit; // TODO: impl, JUnit does have something around timeout for tests
+    int executionTimeLimit;
     int customSerializationThreshold;
     boolean warnOnEmptyOrMissingTestFiles;
     List<String> inputFiles;

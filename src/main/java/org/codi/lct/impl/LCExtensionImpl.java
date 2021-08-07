@@ -2,6 +2,8 @@ package org.codi.lct.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +13,7 @@ import org.codi.lct.core.LCTester;
 import org.codi.lct.data.LCConfig;
 import org.codi.lct.data.LCTestCaseExecution;
 import org.codi.lct.impl.helper.ConfigHelper;
+import org.codi.lct.impl.helper.ExecutorHelper;
 import org.codi.lct.impl.helper.JunitHelper;
 import org.codi.lct.impl.helper.ReflectionHelper;
 import org.codi.lct.impl.helper.ValidationHelper;
@@ -29,13 +32,14 @@ import org.junit.jupiter.api.extension.ParameterResolver;
  * custom extension
  */
 @Slf4j
-@ExtensionMethod({ConfigHelper.class, ValidationHelper.class, JunitHelper.class})
+@ExtensionMethod({ConfigHelper.class, ValidationHelper.class, JunitHelper.class, ExecutorHelper.class})
 public class LCExtensionImpl implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback, AfterAllCallback,
     ParameterResolver {
 
+    private final ExecutorService executor = ExecutorHelper.createSingleThreadExecutor("LeetCode-TestRunner", 7);
+    private final List<LCTestCaseExecution> results = new ArrayList<>();
     private LCConfig classConfig;
     private List<LCConfig> solutionMethodConfigs;
-    private List<LCTestCaseExecution> results = new ArrayList<>();
     private boolean executedAtLeastOnce;
 
     // ***** Test Lifecycle ***** //
@@ -49,13 +53,14 @@ public class LCExtensionImpl implements BeforeAllCallback, BeforeEachCallback, A
             .stream()
             .map(method -> classConfig.withMethod(method))
             .collect(Collectors.toList());
+        executor.warmExecutorService();
     }
 
     @Override
     public void beforeEach(ExtensionContext context) {
         executedAtLeastOnce = true;
         // Prep new executor for each test case
-        context.createExecutor(new LCExecutorImpl(solutionMethodConfigs, context.getRequiredTestInstance()));
+        context.createExecutor(new LCExecutorImpl(executor, solutionMethodConfigs, context.getRequiredTestInstance()));
     }
 
     @Override

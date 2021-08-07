@@ -6,6 +6,10 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -14,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.codi.lct.core.LCException;
 import org.codi.lct.core.LCExecutor;
 import org.codi.lct.core.LCTestCase;
+import org.codi.lct.core.LCUtil;
 import org.codi.lct.data.LCConfig;
 import org.codi.lct.data.LCTestCaseExecution;
 import org.codi.lct.impl.helper.JacksonHelper;
@@ -24,6 +29,7 @@ public final class LCExecutorImpl implements LCExecutor {
 
     private static final ResultChecker checker = new ResultChecker();
 
+    private final ExecutorService executor;
     private final List<LCConfig> configs;
     private final Object instance;
     private LCTestCase testCase;
@@ -44,7 +50,8 @@ public final class LCExecutorImpl implements LCExecutor {
             }
         });
 
-    public LCExecutorImpl(List<LCConfig> configs, Object instance) {
+    public LCExecutorImpl(ExecutorService executor, List<LCConfig> configs, Object instance) {
+        this.executor = executor;
         this.configs = configs;
         this.instance = instance;
         this.executions = new ArrayList<>(configs.size());
@@ -53,21 +60,18 @@ public final class LCExecutorImpl implements LCExecutor {
     @Override
     public void executeTestCase(@NonNull LCTestCase testCase) {
         this.testCase = testCase;
-        configs.forEach(config -> executions.add(executeTestCaseInternal(config)));
+        configs.forEach(this::executeTestCaseOnRunner);
         if (configs.size() == 1) {
             LCTestCaseExecution execution = executions.get(0);
             if (!execution.isSuccess()) {
-                throw new LCException(
-                    "[Test Case Failed] Resolved Test Case - Input: " + execution.getTestCase().getInputs()
-                        + ", Expected: " + execution.getTestCase().getExpected() + ", Actual: "
-                        + execution.getActual());
+                throw new LCException("[Test Case Failed]\n" + generateTestCaseFailureMessage(execution),
+                    execution.getException());
             }
         } else {
             String errors = executions.stream()
                 .filter(Predicate.not(LCTestCaseExecution::isSuccess))
-                .map(execution -> "[" + execution.getConfig().getSolutionMethod().getName()
-                    + "] Resolved Test Case - Input: " + execution.getTestCase().getInputs() + ", Expected: "
-                    + execution.getTestCase().getExpected() + ", Actual: " + execution.getActual())
+                .map(execution -> "[" + execution.getConfig().getSolutionMethod().getName() + "] "
+                    + generateTestCaseFailureMessage(execution))
                 .collect(Collectors.joining("\n"));
             if (!errors.isEmpty()) {
                 throw new LCException("Test Case Failed!\n" + errors);
@@ -75,16 +79,66 @@ public final class LCExecutorImpl implements LCExecutor {
         }
     }
 
-    private LCTestCaseExecution executeTestCaseInternal(LCConfig config) {
+    private static String generateTestCaseFailureMessage(LCTestCaseExecution execution) {
+        String s = "Resolved Test Case - Input: " + LCUtil.serialize(execution.getTestCase().getInputs());
+        if (execution.getException() == null) {
+            s = s + ", Expected: " + LCUtil.serialize(execution.getTestCase().getExpected()) + ", Actual: "
+                + LCUtil.serialize(execution.getActual());
+        } else {
+            log.info("Test case failed with exception", execution.getException());
+            s = execution.getException().getMessage() + ", " + s;
+        }
+        return s;
+    }
+
+    private void executeTestCaseOnRunner(LCConfig config) {
+        int tle = config.getExecutionTimeLimit();
+        Future<LCTestCaseExecution> future = executor.submit(() -> executeTestCaseInternal(config, testCase, instance));
+        try {
+            if (tle > 0) {
+                try {
+                    executions.add(future.get(tle, TimeUnit.MILLISECONDS));
+                } catch (TimeoutException e) {
+                    future.cancel(true);
+                    executions.add(LCTestCaseExecution.builder()
+                        .config(config)
+                        .testCase(testCase)
+                        .testInstance(instance)
+                        .start(-1)
+                        .actual(null)
+                        .end(-1)
+                        .success(false)
+                        .exception(new LCException(
+                            "Time Limit Exceeded -- method: " + config.getSolutionMethod() + ", testCase: " + testCase))
+                        .build());
+                }
+            } else {
+                executions.add(future.get());
+            }
+        } catch (Exception e) {
+            throw new LCException("[Internal] Unknown internal error", e);
+        }
+    }
+
+    private static LCTestCaseExecution executeTestCaseInternal(LCConfig config, LCTestCase testCase, Object instance) {
         // Resolve parameters
         Object[] params = resolveParameterValues(config.getSolutionMethod(), testCase.getInputs());
         Object returnValue = resolveReturnValue(config.getSolutionMethod(), testCase.getExpected());
         LCTestCase resolvedTestCase = LCTestCase.builder().inputs(Arrays.asList(params)).expected(returnValue).build();
         // Run test case
         long start = System.nanoTime();
-        Object actual = ReflectionHelper.invokeSolutionMethod(instance, config.getSolutionMethod(), params);
+        Object actual = null;
+        Throwable exception = null;
+        try {
+            actual = ReflectionHelper.invokeSolutionMethod(instance, config.getSolutionMethod(), params);
+        } catch (LCException e) {
+            throw e;
+        } catch (Throwable e) {
+            exception = new LCException(
+                "Error inside solution method: " + e.getClass().getSimpleName() + " " + e.getMessage(), e);
+        }
         long end = System.nanoTime();
-        boolean success = checker.checkAnswer(returnValue, actual);
+        boolean success = exception == null && checker.checkAnswer(returnValue, actual);
         LCTestCaseExecution execution = LCTestCaseExecution.builder()
             .config(config)
             .testCase(resolvedTestCase)
@@ -93,6 +147,7 @@ public final class LCExecutorImpl implements LCExecutor {
             .actual(actual)
             .end(end)
             .success(success)
+            .exception(exception)
             .build();
         log.debug("Test Case Execution: {}", execution);
         if (config.isTrackExecutionTime()) {
