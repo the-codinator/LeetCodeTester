@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
+import org.codi.lct.annotation.LCOutputTransformation;
 import org.codi.lct.annotation.LCSolution;
 import org.codi.lct.core.LCException;
 import org.codi.lct.core.LCExecutor;
@@ -154,11 +155,25 @@ public final class LCExecutorImpl implements LCExecutor {
         }
     }
 
-    private static Object applyTransformation(Method transformer, Object actual, Object[] resolvedInputs) {
+    private static Object applyTransformation(Method transformer, Object actual, Object[] inputs) {
         if (transformer == null) {
             return actual;
         }
-        // TODO
-        return actual;
+        try {
+            Object[] resolvedInputs = new Object[transformer.getParameterCount()];
+            resolvedInputs[0] = resolveParameterValue(transformer, 0, actual);
+            if (transformer.getParameterCount() > 1) {
+                for (int i = 0; i < inputs.length; i++) {
+                    resolvedInputs[i + 1] = resolveParameterValue(transformer, i + 1, inputs[i]);
+                }
+            }
+            return ReflectionHelper.invokeMethod(null, transformer, resolvedInputs, LCOutputTransformation.class);
+        } catch (LCException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw new LCException(
+                "Error executing @" + LCOutputTransformation.class.getSimpleName() + " method on result "
+                    + actual.serialize(), e);
+        }
     }
 }

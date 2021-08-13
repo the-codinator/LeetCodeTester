@@ -94,6 +94,33 @@ public class ValidationHelper {
                 "@" + LCOutputTransformation.class.getSimpleName() + " method must not have generic type parameters: "
                     + method);
         }
-        // TODO
+        for (Method solution : solutions) {
+            // Parameter count
+            if (method.getParameterCount() != solution.getParameterCount() + 1) {
+                throw new LCException(
+                    "Bad argument list for @" + LCOutputTransformation.class.getSimpleName() + " method: " + method
+                        + ". Must have 1st argument matching return type of solution method and optionally all input"
+                        + " arguments of the solution method: " + solution);
+            }
+            // Ensure first parameter match
+            if (!ReflectionHelper.isCompatibleType(solution.getReturnType(), solution.getGenericReturnType(),
+                method.getParameterTypes()[0], method.getGenericParameterTypes()[0])) {
+                throw new LCException(
+                    "First parameter of @" + LCOutputTransformation.class.getSimpleName() + "method: " + method
+                        + " must match return type of @" + LCSolution.class.getSimpleName() + " method: " + solution);
+            }
+            if (method.getParameterCount() > 1) {
+                // Ensure additional parameters match input
+                for (int i = 1; i < method.getParameterCount(); i++) {
+                    if (!ReflectionHelper.isCompatibleType(solution.getParameterTypes()[i - 1],
+                        solution.getGenericParameterTypes()[i - 1], method.getParameterTypes()[i],
+                        method.getGenericParameterTypes()[i])) {
+                        throw new LCException(
+                            "Additional parameters of @" + LCOutputTransformation.class.getSimpleName() + " method: "
+                                + method + " must match argument list of solution method: " + solution);
+                    }
+                }
+            }
+        }
     }
 }

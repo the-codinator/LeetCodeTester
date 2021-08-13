@@ -13,7 +13,7 @@ import org.codi.lct.core.LCTester;
 public class Example06CustomVerification extends LCTester {
 
     public static LCTestCase lcTestCases() {
-        return LCTestCase.builder().expected(3).input(Set.of("abcd", "1234", "xyz", "ttt", "")).build();
+        return LCTestCase.builder().expected(3).input(Set.of("long", "1234", "xyz", "ttt", "cartoon")).build();
     }
 
     public static int lcTransform(String result, Set<String> strings) {

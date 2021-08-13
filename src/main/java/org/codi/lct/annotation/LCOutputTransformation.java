@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  *
  * Tip: The return type can be as simple as boolean if the correctness check is too complex / manually performed.
  *
- * Note: If a method names "lcTransform" exists and follows the above signature rules, it is automatically picked up,
+ * Note: If a method named "lcTransform" exists and follows the above signature rules, it is automatically picked up,
  * irrespective of the presence of this annotation. See {@link #AUTO_DISCOVERY_METHOD_NAME}
  */
 @Target(ElementType.METHOD)

@@ -22,9 +22,9 @@ import java.lang.annotation.Target;
  *   </li>
  * </ul>
  *
- * Note: If a method name "lcTestCases" with the exact signature {@code public static List<LCTestCase> lcTestCases()} OR
- * {@code public static LCTestCase lcTestCases()} exists, it is automatically picked up, irrespective of the presence of
- * this annotation. See {@link #AUTO_DISCOVERY_METHOD_NAME}
+ * Note: If a method named "lcTestCases" with the exact signature {@code public static List<LCTestCase> lcTestCases()}
+ * OR {@code public static LCTestCase lcTestCases()} exists, it is automatically picked up, irrespective of the presence
+ * of this annotation. See {@link #AUTO_DISCOVERY_METHOD_NAME}
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

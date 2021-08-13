@@ -21,12 +21,12 @@ public class Example02CustomTestCase extends LCTester {
     // @LCTestCaseGenerator
     public static List<LCTestCase> lcTestCases() {
         return List.of( // Different approaches for creating testcases
-            LCTestCase.builder().input(5).input(10).expected(15).build(), // providing one input at a time to builder
-            LCTestCase.builder().inputs(List.of(2, 3)).expected(5).build(), // using list input builder
-            new LCTestCase(11, 5, 6), // using varargs input constructor
-            new LCTestCase(11, List.of(5, 6)), // using list input constructor
-            LCTestCase.parse("333", "111 222"), // parsing from string (similar to data file)
-            LCTestCase.parse("111 222 333") // parsing from single string (note: inputs before expected here)
+            LCTestCase.builder().input(5).input(10).expected(510).build(), // providing one input at a time to builder
+            LCTestCase.builder().inputs(List.of(2, 3)).expected(23).build(), // using list input builder
+            new LCTestCase(56, 5, 6), // using varargs input constructor
+            new LCTestCase(56, List.of(5, 6)), // using list input constructor
+            LCTestCase.parse("111222", "111 222"), // parsing from string (similar to data file)
+            LCTestCase.parse("111 222 111222") // parsing from single string (note: inputs before expected here)
         );
     }
 
@@ -36,15 +36,15 @@ public class Example02CustomTestCase extends LCTester {
      * the return type of the solution method, and optionally the inputs of the solution method.
      */
     // @LCOutputTransformation
-    public static String lcTransform(int x) {
-        return String.valueOf(x);
+    public static int lcTransform(String s) {
+        return Integer.parseInt(s);
     }
 
     /**
      * {@link LCSolution} annotation is not required since we have a single public non-static method
      */
     // @LCSolution
-    public int sum(int a, int b) {
-        return a + b;
+    public String concat(int a, int b) {
+        return "" + a + b;
     }
 }

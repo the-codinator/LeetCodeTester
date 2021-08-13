@@ -85,7 +85,6 @@ public class ReflectionHelper {
             .filter(ReflectionHelper::isPublicMethod)
             .filter(ReflectionHelper::isStaticMethod)
             .filter(m -> LCOutputTransformation.AUTO_DISCOVERY_METHOD_NAME.equals(m.getName()))
-            .filter(m -> m.getParameterCount() == 0)
             .findAny()
             .ifPresent(methods::add);
         if (methods.size() > 1) {
