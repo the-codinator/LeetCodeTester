@@ -96,7 +96,7 @@ public class ValidationHelper {
         }
         for (Method solution : solutions) {
             // Parameter count
-            if (method.getParameterCount() != solution.getParameterCount() + 1) {
+            if (method.getParameterCount() != 1 && method.getParameterCount() != solution.getParameterCount() + 1) {
                 throw new LCException(
                     "Bad argument list for @" + LCOutputTransformation.class.getSimpleName() + " method: " + method
                         + ". Must have 1st argument matching return type of solution method and optionally all input"
