@@ -1,9 +1,12 @@
 package org.codi.lct.impl.helper;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,13 +15,15 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.codi.lct.annotation.LCOutputTransformation;
 import org.codi.lct.annotation.LCSolution;
 import org.codi.lct.annotation.LCTestCaseGenerator;
 import org.codi.lct.core.LCException;
 import org.codi.lct.core.LCTestCase;
-import org.codi.lct.impl.Constants;
 
+@Slf4j
 @UtilityClass
 public class ReflectionHelper {
 
@@ -63,7 +68,7 @@ public class ReflectionHelper {
         Optional<Method> autoMethod = Arrays.stream(testClass.getDeclaredMethods())
             .filter(ReflectionHelper::isPublicMethod)
             .filter(ReflectionHelper::isStaticMethod)
-            .filter(m -> Constants.DEFAULT_TEST_CASE_GENERATOR_METHOD_NAME.equals(m.getName()))
+            .filter(m -> LCTestCaseGenerator.AUTO_DISCOVERY_METHOD_NAME.equals(m.getName()))
             .filter(m -> m.getParameterCount() == 0)
             .findAny();
         if (autoMethod.isPresent()) {
@@ -73,35 +78,98 @@ public class ReflectionHelper {
         return methods;
     }
 
+    public Method findOutputTransformerMethod(Class<?> testClass, List<Method> solutionMethods) {
+        List<Method> methods = new ArrayList<>(
+            MethodUtils.getMethodsListWithAnnotation(testClass, LCOutputTransformation.class));
+        Arrays.stream(testClass.getDeclaredMethods())
+            .filter(ReflectionHelper::isPublicMethod)
+            .filter(ReflectionHelper::isStaticMethod)
+            .filter(m -> LCOutputTransformation.AUTO_DISCOVERY_METHOD_NAME.equals(m.getName()))
+            .filter(m -> m.getParameterCount() == 0)
+            .findAny()
+            .ifPresent(methods::add);
+        if (methods.size() > 1) {
+            throw new LCException("Found multiple @" + LCOutputTransformation.class + " methods: " + methods);
+        }
+        if (methods.isEmpty()) {
+            return null;
+        }
+        ValidationHelper.validateOutputTransformationMethod(methods.get(0), solutionMethods);
+        return methods.get(0);
+    }
+
     public boolean hasReturnValue(Method method) {
         return method.getReturnType() != Void.class;
+    }
+
+    public void validateCompatibleType(Class<?> sourceClass, Type sourceType, Class<?> targetClass, Type targetType) {
+        if (!isCompatibleType(sourceClass, sourceType, targetClass, targetType)) {
+            throw new LCException("Cannot assign " + sourceType + " to type " + targetType);
+        }
+    }
+
+    public boolean isCompatibleType(Class<?> sourceClass, Type sourceType, Class<?> targetClass, Type targetType) {
+        if (!targetClass.isAssignableFrom(sourceClass)) {
+            return false;
+        }
+        if (hasGenericTypeParameters(sourceClass) || hasGenericTypeParameters(targetClass)) {
+            // Best effort (which didn't actually amount to much... :P)
+            if (!(sourceType instanceof ParameterizedType && targetType instanceof ParameterizedType)) {
+                return false;
+            }
+            Type[] sourceGenericTypes = ((ParameterizedType) sourceType).getActualTypeArguments();
+            Type[] targetGenericTypes = ((ParameterizedType) targetType).getActualTypeArguments();
+            if (sourceGenericTypes.length != targetGenericTypes.length) {
+                return false;
+            }
+            for (int i = 0; i < sourceGenericTypes.length; i++) {
+                Class<?> src;
+                if (sourceGenericTypes[i] instanceof Class) {
+                    src = (Class<?>) sourceGenericTypes[i];
+                } else if (sourceGenericTypes[i] instanceof ParameterizedType) {
+                    src = (Class<?>) ((ParameterizedType) sourceGenericTypes[i]).getRawType();
+                } else {
+                    return false;
+                }
+                Class<?> tgt;
+                if (targetGenericTypes[i] instanceof Class) {
+                    tgt = (Class<?>) targetGenericTypes[i];
+                } else if (targetGenericTypes[i] instanceof ParameterizedType) {
+                    tgt = (Class<?>) ((ParameterizedType) targetGenericTypes[i]).getRawType();
+                } else {
+                    return false;
+                }
+                if (!isCompatibleType(src, sourceGenericTypes[i], tgt, targetGenericTypes[i])) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @SuppressWarnings("unchecked")
     public List<LCTestCase> validateAndInvokeTestCaseGeneratorMethod(Method method) {
         ValidationHelper.validateCustomTestCaseMethod(method);
         try {
-            Object result = method.invoke(null);
+            Object result = invokeMethod(null, method, new Object[0], LCTestCaseGenerator.class);
             return result instanceof LCTestCase ? Collections.singletonList((LCTestCase) result)
                 : (List<LCTestCase>) result;
-        } catch (IllegalAccessException | IllegalArgumentException e) {
-            throw new LCException(
-                "Could not invoke @" + LCTestCaseGenerator.class.getSimpleName() + " method: " + method
-                    + " - try checking Java encapsulation related issues");
-        } catch (InvocationTargetException e) {
+        } catch (LCException e) {
+            throw e;
+        } catch (Throwable e) {
             throw new LCException("Error inside @" + LCTestCaseGenerator.class.getSimpleName() + " method: " + method,
-                e.getCause());
+                e);
         }
     }
 
-    public Object invokeSolutionMethod(Object instance, Method method, Object[] resolvedInputs) throws Throwable {
+    public Object invokeMethod(Object instance, Method method, Object[] resolvedInputs,
+        Class<? extends Annotation> annotation) throws Throwable {
         try {
             return method.invoke(instance, resolvedInputs);
-        } catch (IllegalAccessException | IllegalArgumentException e) {
-            throw new LCException("Could not invoke @" + LCSolution.class.getSimpleName() + " method: " + method
-                + " - try checking Java encapsulation related issues");
         } catch (InvocationTargetException e) {
             throw e.getCause();
+        } catch (Exception e) {
+            throw new LCException("Could not invoke @" + annotation.getSimpleName() + " method: " + method, e);
         }
     }
 }

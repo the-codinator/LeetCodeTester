@@ -11,33 +11,22 @@ import org.codi.lct.impl.helper.JacksonHelper;
 public class LCUtil {
 
     /**
-     * Serialize / stringify an object to its json string representation using the internal ObjectMapper
+     * Serialize / stringify an object to its json string representation using the internal ObjectMapper. Useful for
+     * printing data for debugging.
      *
      * @param obj object to serialize
      * @return serialized string
      */
     public String serialize(Object obj) {
-        try {
-            return JacksonHelper.getObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new LCException("Error serializing object", e);
-        }
+        return JacksonHelper.serialize(obj);
     }
 
     public <T> T deserialize(String str, Class<T> type) {
-        try {
-            return JacksonHelper.getObjectMapper().readValue(str, type);
-        } catch (Exception e) {
-            throw new LCException("Error deserializing string to " + type.getSimpleName(), e);
-        }
+        return JacksonHelper.deserialize(str, type);
     }
 
     public <T> T convert(Object obj, Class<T> type) {
-        try {
-            return JacksonHelper.getObjectMapper().convertValue(obj, type);
-        } catch (Exception e) {
-            throw new LCException("Error converting to " + type.getSimpleName(), e);
-        }
+        return JacksonHelper.convert(obj, type);
     }
 
     /**

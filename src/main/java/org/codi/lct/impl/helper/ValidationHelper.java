@@ -1,11 +1,11 @@
 package org.codi.lct.impl.helper;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import lombok.experimental.ExtensionMethod;
 import lombok.experimental.UtilityClass;
+import org.codi.lct.annotation.LCOutputTransformation;
 import org.codi.lct.annotation.LCSolution;
 import org.codi.lct.annotation.LCTestCaseGenerator;
 import org.codi.lct.core.LCException;
@@ -14,6 +14,17 @@ import org.codi.lct.core.LCTestCase;
 @UtilityClass
 @ExtensionMethod(ReflectionHelper.class)
 public class ValidationHelper {
+
+    private static final List<LCTestCase> unused = null;
+    private static final Type typeListLCTestCase;
+
+    static {
+        try {
+            typeListLCTestCase = ValidationHelper.class.getDeclaredField("unused").getGenericType();
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException("Someone changed the name of the List<LCTestCase> field", e);
+        }
+    }
 
     public void validateSolutionMethod(Method method) {
         // Ensure public static
@@ -63,19 +74,26 @@ public class ValidationHelper {
             throw new LCException("@" + LCTestCaseGenerator.class.getSimpleName() + " method cannot accept parameters");
         }
         // Ensure return type LCTestCase or List<LCTestCase>
-        boolean isValidReturnType = false;
-        if (LCTestCase.class.isAssignableFrom(method.getReturnType())) {
-            isValidReturnType = true;
-        } else if (List.class.isAssignableFrom(method.getReturnType())) {
-            Type[] args = ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments();
-            if (args != null && args.length == 1 && args[0] == LCTestCase.class) {
-                isValidReturnType = true;
-            }
+        if (!ReflectionHelper.isCompatibleType(method.getReturnType(), method.getGenericReturnType(), LCTestCase.class,
+            LCTestCase.class) && !ReflectionHelper.isCompatibleType(method.getReturnType(),
+            method.getGenericReturnType(), List.class, typeListLCTestCase)) {
+            throw new LCException("@" + LCTestCaseGenerator.class.getSimpleName() + " method must return type '"
+                + LCTestCase.class.getSimpleName() + "' or 'List<" + LCTestCase.class.getSimpleName() + ">'");
         }
-        if (!isValidReturnType) {
+    }
+
+    public void validateOutputTransformationMethod(Method method, List<Method> solutions) {
+        // Ensure public static
+        if (!method.isPublicMethod() || !method.isStaticMethod()) {
             throw new LCException(
-                "@" + LCTestCaseGenerator.class.getSimpleName() + " method must return type 'LCTestCase' or 'List<"
-                    + LCTestCase.class.getSimpleName() + ">'");
+                "@" + LCOutputTransformation.class.getSimpleName() + " method must be public & static: " + method);
         }
+        // Ensure no generic type params
+        if (method.hasGenericTypeParameters()) {
+            throw new LCException(
+                "@" + LCOutputTransformation.class.getSimpleName() + " method must not have generic type parameters: "
+                    + method);
+        }
+        // TODO
     }
 }

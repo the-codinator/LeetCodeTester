@@ -1,5 +1,6 @@
 package org.codi.lct.impl;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +36,7 @@ public class LCExtensionImpl implements BeforeAllCallback, BeforeEachCallback, A
 
     private LCConfig classConfig;
     private List<LCConfig> solutionMethodConfigs;
+    private Method outputTransformationMethod;
     private List<LCTestCaseExecution> results = new ArrayList<>();
     private boolean executedAtLeastOnce;
 
@@ -45,8 +47,9 @@ public class LCExtensionImpl implements BeforeAllCallback, BeforeEachCallback, A
         Class<?> testClass = context.getRequiredTestClass();
         log.info("Testing Class: " + testClass.getSimpleName());
         classConfig = ConfigHelper.BASE_CONFIG.withClass(testClass);
-        solutionMethodConfigs = ReflectionHelper.findSolutionMethods(testClass)
-            .stream()
+        List<Method> solutionMethods = ReflectionHelper.findSolutionMethods(testClass);
+        outputTransformationMethod = ReflectionHelper.findOutputTransformerMethod(testClass, solutionMethods);
+        solutionMethodConfigs = solutionMethods.stream()
             .map(method -> classConfig.withMethod(method))
             .collect(Collectors.toList());
     }
@@ -55,7 +58,8 @@ public class LCExtensionImpl implements BeforeAllCallback, BeforeEachCallback, A
     public void beforeEach(ExtensionContext context) {
         executedAtLeastOnce = true;
         // Prep new executor for each test case
-        context.createExecutor(new LCExecutorImpl(solutionMethodConfigs, context.getRequiredTestInstance()));
+        context.createExecutor(
+            new LCExecutorImpl(context.getRequiredTestInstance(), solutionMethodConfigs, outputTransformationMethod));
     }
 
     @Override

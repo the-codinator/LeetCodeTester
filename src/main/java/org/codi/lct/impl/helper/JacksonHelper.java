@@ -1,6 +1,7 @@
 package org.codi.lct.impl.helper;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MappingIterator;
@@ -16,9 +17,11 @@ import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.codi.lct.core.LCException;
 
 @UtilityClass
+@Slf4j
 public class JacksonHelper {
 
     /**
@@ -65,6 +68,32 @@ public class JacksonHelper {
             return objectMapper.convertValue(rawValue, TypeFactory.defaultInstance().constructType(targetType));
         } else {
             return objectMapper.convertValue(rawValue, targetClass);
+        }
+    }
+
+    public String serialize(Object o) {
+        try {
+            return objectMapper.writeValueAsString(o);
+        } catch (JsonProcessingException e) {
+            String s = o.toString();
+            log.error("Failed to serialize object: " + s);
+            return s;
+        }
+    }
+
+    public <T> T deserialize(String str, Class<T> type) {
+        try {
+            return JacksonHelper.getObjectMapper().readValue(str, type);
+        } catch (Exception e) {
+            throw new LCException("Error deserializing string to " + type.getSimpleName(), e);
+        }
+    }
+
+    public <T> T convert(Object obj, Class<T> type) {
+        try {
+            return JacksonHelper.getObjectMapper().convertValue(obj, type);
+        } catch (Exception e) {
+            throw new LCException("Error converting to " + type.getSimpleName(), e);
         }
     }
 }

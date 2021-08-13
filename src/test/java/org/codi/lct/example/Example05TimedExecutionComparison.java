@@ -14,7 +14,7 @@ import org.codi.lct.core.LCTester;
 public class Example05TimedExecutionComparison extends LCTester {
 
     // We can also return a single test case instead of a list
-    public static LCTestCase testCases() {
+    public static LCTestCase lcTestCases() {
         return new LCTestCase(1_000_000_001, 1_000_000_000, 1);
     }
 

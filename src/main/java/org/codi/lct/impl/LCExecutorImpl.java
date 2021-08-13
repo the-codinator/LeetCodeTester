@@ -10,23 +10,26 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
+import org.codi.lct.annotation.LCSolution;
 import org.codi.lct.core.LCException;
 import org.codi.lct.core.LCExecutor;
 import org.codi.lct.core.LCTestCase;
-import org.codi.lct.core.LCUtil;
 import org.codi.lct.data.LCConfig;
 import org.codi.lct.data.LCTestCaseExecution;
 import org.codi.lct.impl.helper.JacksonHelper;
 import org.codi.lct.impl.helper.ReflectionHelper;
 
 @Slf4j
+@ExtensionMethod(JacksonHelper.class)
 public final class LCExecutorImpl implements LCExecutor {
 
     private static final ResultChecker checker = new ResultChecker();
 
-    private final List<LCConfig> configs;
     private final Object instance;
+    private final List<LCConfig> configs;
+    private final Method transformer;
     private LCTestCase testCase;
 
     @Getter
@@ -45,9 +48,10 @@ public final class LCExecutorImpl implements LCExecutor {
             }
         });
 
-    public LCExecutorImpl(List<LCConfig> configs, Object instance) {
-        this.configs = configs;
+    public LCExecutorImpl(Object instance, List<LCConfig> configs, Method transformer) {
         this.instance = instance;
+        this.configs = configs;
+        this.transformer = transformer;
         this.executions = new ArrayList<>(configs.size());
     }
 
@@ -74,27 +78,33 @@ public final class LCExecutorImpl implements LCExecutor {
 
     private LCTestCaseExecution executeTestCaseInternal(LCConfig config) {
         // Resolve parameters
-        Object[] params = resolveParameterValues(config.getSolutionMethod(), testCase.getInputs());
-        Object returnValue = resolveReturnValue(config.getSolutionMethod(), testCase.getExpected());
-        LCTestCase resolvedTestCase = LCTestCase.builder().inputs(Arrays.asList(params)).expected(returnValue).build();
+        Object[] resolvedInputs = resolveParameterValues(config.getSolutionMethod(), testCase.getInputs());
+        Object resolvedExpectedValue = resolveReturnValue(
+            transformer == null ? config.getSolutionMethod() : transformer, testCase.getExpected());
+        LCTestCase resolvedTestCase = LCTestCase.builder()
+            .inputs(Arrays.asList(resolvedInputs))
+            .expected(resolvedExpectedValue)
+            .build();
         // Run test case
         long start = System.nanoTime();
-        Object actual;
+        Object actualValue;
         try {
-            actual = ReflectionHelper.invokeSolutionMethod(instance, config.getSolutionMethod(), params);
+            actualValue = ReflectionHelper.invokeMethod(instance, config.getSolutionMethod(), resolvedInputs,
+                LCSolution.class);
         } catch (LCException e) {
             throw e;
         } catch (Throwable e) {
             throw new LCException("Exception inside Solution method: " + config.getSolutionMethod(), e);
         }
         long end = System.nanoTime();
-        boolean success = checker.checkAnswer(returnValue, actual);
+        Object transformedValue = applyTransformation(transformer, actualValue, resolvedInputs);
+        boolean success = checker.checkAnswer(resolvedExpectedValue, transformedValue, actualValue);
         LCTestCaseExecution execution = LCTestCaseExecution.builder()
             .config(config)
             .testCase(resolvedTestCase)
             .testInstance(instance)
             .start(start)
-            .actual(actual)
+            .actual(actualValue)
             .end(end)
             .success(success)
             .build();
@@ -107,9 +117,8 @@ public final class LCExecutorImpl implements LCExecutor {
     }
 
     private static String generateTestCaseFailureMessage(LCTestCaseExecution execution) {
-        return "Resolved Test Case - Input: " + LCUtil.serialize(execution.getTestCase().getInputs()) + ", Expected: "
-            + LCUtil.serialize(execution.getTestCase().getExpected()) + ", Actual: " + LCUtil.serialize(
-            execution.getActual());
+        return "Resolved Test Case - Input: " + execution.getTestCase().getInputs().serialize() + ", Expected: "
+            + execution.getTestCase().getExpected().serialize() + ", Actual: " + execution.getActual().serialize();
     }
 
     private static Object[] resolveParameterValues(Method method, List<Object> rawValues) {
@@ -128,9 +137,8 @@ public final class LCExecutorImpl implements LCExecutor {
 
     private static Object resolveParameterValue(Method method, int idx, Object rawValue) {
         try {
-            return JacksonHelper.resolveValue(rawValue, method.getParameterTypes()[idx],
-                method.getGenericParameterTypes()[idx]);
-        } catch (IllegalArgumentException e) {
+            return rawValue.resolveValue(method.getParameterTypes()[idx], method.getGenericParameterTypes()[idx]);
+        } catch (Exception e) {
             throw new LCException("Failed to resolve parameter value - method: " + method + ", param index: " + idx
                 + ", conversion target type: " + method.getGenericParameterTypes()[idx].getTypeName() + " raw value: "
                 + rawValue, e);
@@ -139,10 +147,18 @@ public final class LCExecutorImpl implements LCExecutor {
 
     private static Object resolveReturnValue(Method method, Object rawValue) {
         try {
-            return JacksonHelper.resolveValue(rawValue, method.getReturnType(), method.getGenericReturnType());
-        } catch (IllegalArgumentException e) {
+            return rawValue.resolveValue(method.getReturnType(), method.getGenericReturnType());
+        } catch (Exception e) {
             throw new LCException("Failed to resolve return value - method: " + method + ", conversion target type: "
                 + method.getGenericReturnType().getTypeName() + " raw value: " + rawValue, e);
         }
+    }
+
+    private static Object applyTransformation(Method transformer, Object actual, Object[] resolvedInputs) {
+        if (transformer == null) {
+            return actual;
+        }
+        // TODO
+        return actual;
     }
 }
