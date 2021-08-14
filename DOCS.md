@@ -107,7 +107,6 @@ You can define your own data structures and use with this framework. The followi
   This entirely follows the rules of Jackson Databind for reading data from simpler types to the custom data structure (complex) type.
 - `@JsonSerialize(using = MyDataStructureSerializer.class)` annotation on the class for converting the value from one type to another.
   This entirely follows the rules of Jackson Databind for converting values across different data types so that the equality matchers can do their thing.
-- `@EqualityChecker(MyEqualityChecker.class)` annotation on the class to define a custom equality checked between the expected and actual test case results.
-  TODO: feature not yet supported!
+- Include a proper `equals` method for equality checking. In most cases, `@lombok.EqualsAndHashCode` would suffice
 
 Note: if the data structure is a standard one, I would recommend you to contribute it back to this repo via pull requests.

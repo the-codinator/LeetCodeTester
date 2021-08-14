@@ -4,8 +4,8 @@ import java.util.List;
 import org.codi.lct.annotation.LCOutputTransformation;
 import org.codi.lct.annotation.LCSolution;
 import org.codi.lct.annotation.LCTestCaseGenerator;
-import org.codi.lct.core.LCTestCase;
-import org.codi.lct.core.LCTester;
+import org.codi.lct.core.tester.LCTestCase;
+import org.codi.lct.core.tester.LCTester;
 
 /**
  * This test demonstrates how you can define custom test cases from code, rather than using the data file

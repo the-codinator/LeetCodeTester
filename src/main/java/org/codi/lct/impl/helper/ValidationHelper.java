@@ -9,7 +9,7 @@ import org.codi.lct.annotation.LCOutputTransformation;
 import org.codi.lct.annotation.LCSolution;
 import org.codi.lct.annotation.LCTestCaseGenerator;
 import org.codi.lct.core.LCException;
-import org.codi.lct.core.LCTestCase;
+import org.codi.lct.core.tester.LCTestCase;
 
 @UtilityClass
 @ExtensionMethod(ReflectionHelper.class)

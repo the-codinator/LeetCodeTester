@@ -1,4 +1,4 @@
-package org.codi.lct.adapter.ser;
+package org.codi.lct.impl.adapter.ser;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;

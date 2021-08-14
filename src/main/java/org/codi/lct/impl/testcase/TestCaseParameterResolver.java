@@ -1,7 +1,7 @@
 package org.codi.lct.impl.testcase;
 
 import lombok.Value;
-import org.codi.lct.core.LCTestCase;
+import org.codi.lct.core.tester.LCTestCase;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;

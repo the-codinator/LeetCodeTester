@@ -16,12 +16,14 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.codi.lct.annotation.LCOutputTransformation;
 import org.codi.lct.annotation.LCSolution;
 import org.codi.lct.annotation.LCTestCaseGenerator;
 import org.codi.lct.core.LCException;
-import org.codi.lct.core.LCTestCase;
+import org.codi.lct.core.tester.LCTestCase;
+import org.codi.lct.impl.checker.LCChecker;
 
 @Slf4j
 @UtilityClass
@@ -101,12 +103,6 @@ public class ReflectionHelper {
         return method.getReturnType() != Void.class;
     }
 
-    public void validateCompatibleType(Class<?> sourceClass, Type sourceType, Class<?> targetClass, Type targetType) {
-        if (!isCompatibleType(sourceClass, sourceType, targetClass, targetType)) {
-            throw new LCException("Cannot assign " + sourceType + " to type " + targetType);
-        }
-    }
-
     public boolean isCompatibleType(Class<?> sourceClass, Type sourceType, Class<?> targetClass, Type targetType) {
         if (!targetClass.isAssignableFrom(sourceClass)) {
             return false;
@@ -169,6 +165,19 @@ public class ReflectionHelper {
             throw e.getCause();
         } catch (Exception e) {
             throw new LCException("Could not invoke @" + annotation.getSimpleName() + " method: " + method, e);
+        }
+    }
+
+    public <T> T instantiateDefault(Class<T> cls) {
+        if (hasGenericTypeParameters(cls)) {
+            throw new LCException(
+                LCChecker.class.getSimpleName() + " implementation must not have generic type parameters: " + cls);
+        }
+        try {
+            return ConstructorUtils.invokeConstructor(cls);
+        } catch (Exception e) {
+            throw new LCException("Failed to instantiate " + LCChecker.class.getSimpleName() + " implementation: " + cls
+                + ". Do you have a working public default constructor ?", e);
         }
     }
 }

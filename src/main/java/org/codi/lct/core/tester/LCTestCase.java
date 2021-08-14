@@ -1,4 +1,4 @@
-package org.codi.lct.core;
+package org.codi.lct.core.tester;
 
 import java.util.Collections;
 import java.util.List;

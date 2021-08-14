@@ -1,4 +1,4 @@
-package org.codi.lct.data;
+package org.codi.lct.impl.data;
 
 import java.lang.reflect.Method;
 import java.util.List;

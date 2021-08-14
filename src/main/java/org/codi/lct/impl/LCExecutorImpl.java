@@ -15,10 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.codi.lct.annotation.LCOutputTransformation;
 import org.codi.lct.annotation.LCSolution;
 import org.codi.lct.core.LCException;
-import org.codi.lct.core.LCExecutor;
-import org.codi.lct.core.LCTestCase;
-import org.codi.lct.data.LCConfig;
-import org.codi.lct.data.LCTestCaseExecution;
+import org.codi.lct.core.tester.LCExecutor;
+import org.codi.lct.core.tester.LCTestCase;
+import org.codi.lct.impl.data.LCConfig;
+import org.codi.lct.impl.data.LCTestCaseExecution;
 import org.codi.lct.impl.helper.JacksonHelper;
 import org.codi.lct.impl.helper.ReflectionHelper;
 
@@ -26,11 +26,10 @@ import org.codi.lct.impl.helper.ReflectionHelper;
 @ExtensionMethod(JacksonHelper.class)
 public final class LCExecutorImpl implements LCExecutor {
 
-    private static final ResultChecker checker = new ResultChecker();
-
     private final Object instance;
     private final List<LCConfig> configs;
     private final Method transformer;
+    private final LCCheckerChainImpl checkers;
     private LCTestCase testCase;
 
     @Getter
@@ -49,10 +48,11 @@ public final class LCExecutorImpl implements LCExecutor {
             }
         });
 
-    public LCExecutorImpl(Object instance, List<LCConfig> configs, Method transformer) {
+    public LCExecutorImpl(Object instance, List<LCConfig> configs, Method transformer, LCCheckerChainImpl checkers) {
         this.instance = instance;
         this.configs = configs;
         this.transformer = transformer;
+        this.checkers = checkers;
         this.executions = new ArrayList<>(configs.size());
     }
 
@@ -63,13 +63,14 @@ public final class LCExecutorImpl implements LCExecutor {
         if (configs.size() == 1) {
             LCTestCaseExecution execution = executions.get(0);
             if (!execution.isSuccess()) {
-                throw new LCException("[Test Case Failed] " + generateTestCaseFailureMessage(execution));
+                throw new LCException(
+                    "[Test Case Failed] " + generateTestCaseFailureMessage(execution, transformer != null));
             }
         } else {
             String errors = executions.stream()
                 .filter(Predicate.not(LCTestCaseExecution::isSuccess))
                 .map(execution -> "[" + execution.getConfig().getSolutionMethod().getName() + "] "
-                    + generateTestCaseFailureMessage(execution))
+                    + generateTestCaseFailureMessage(execution, transformer != null))
                 .collect(Collectors.joining("\n"));
             if (!errors.isEmpty()) {
                 throw new LCException("Test Case Failed!\n" + errors);
@@ -98,14 +99,16 @@ public final class LCExecutorImpl implements LCExecutor {
             throw new LCException("Exception inside Solution method: " + config.getSolutionMethod(), e);
         }
         long end = System.nanoTime();
-        Object transformedValue = applyTransformation(transformer, actualValue, resolvedInputs);
-        boolean success = checker.checkAnswer(resolvedExpectedValue, transformedValue, actualValue);
+        Object transformedValue =
+            transformer == null ? null : applyTransformation(transformer, actualValue, resolvedInputs);
+        boolean success = checkers.doCheck(resolvedExpectedValue, transformer == null ? actualValue : transformedValue);
         LCTestCaseExecution execution = LCTestCaseExecution.builder()
             .config(config)
             .testCase(resolvedTestCase)
             .testInstance(instance)
             .start(start)
             .actual(actualValue)
+            .transformed(transformedValue)
             .end(end)
             .success(success)
             .build();
@@ -117,9 +120,13 @@ public final class LCExecutorImpl implements LCExecutor {
         return execution;
     }
 
-    private static String generateTestCaseFailureMessage(LCTestCaseExecution execution) {
-        return "Resolved Test Case - Input: " + execution.getTestCase().getInputs().serialize() + ", Expected: "
-            + execution.getTestCase().getExpected().serialize() + ", Actual: " + execution.getActual().serialize();
+    private static String generateTestCaseFailureMessage(LCTestCaseExecution execution, boolean isTransformed) {
+        String s = "Resolved Test Case - Input: " + execution.getTestCase().getInputs().serialize() + ", Expected: "
+            + execution.getTestCase().getExpected().serialize() + ", Actual: ";
+        if (isTransformed) {
+            s += execution.getTransformed().serialize() + ", Pre-transform: ";
+        }
+        return s + execution.getActual().serialize();
     }
 
     private static Object[] resolveParameterValues(Method method, List<Object> rawValues) {
@@ -156,9 +163,6 @@ public final class LCExecutorImpl implements LCExecutor {
     }
 
     private static Object applyTransformation(Method transformer, Object actual, Object[] inputs) {
-        if (transformer == null) {
-            return actual;
-        }
         try {
             Object[] resolvedInputs = new Object[transformer.getParameterCount()];
             resolvedInputs[0] = resolveParameterValue(transformer, 0, actual);

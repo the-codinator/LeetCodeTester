@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.codi.lct.core.LCTestCase;
-import org.codi.lct.data.LCConfig;
+import org.codi.lct.core.tester.LCTestCase;
+import org.codi.lct.impl.data.LCConfig;
 import org.codi.lct.impl.helper.ReflectionHelper;
 
 /**

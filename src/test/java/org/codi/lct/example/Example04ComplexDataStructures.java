@@ -1,6 +1,6 @@
 package org.codi.lct.example;
 
-import org.codi.lct.core.LCTester;
+import org.codi.lct.core.tester.LCTester;
 import org.codi.lct.ds.ListNode;
 import org.codi.lct.ds.TreeNode;
 

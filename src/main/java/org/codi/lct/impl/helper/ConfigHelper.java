@@ -13,8 +13,8 @@ import org.codi.lct.annotation.settings.LCExecutionTimeLimit;
 import org.codi.lct.annotation.settings.LCInputFiles;
 import org.codi.lct.annotation.settings.LCTrackExecutionTime;
 import org.codi.lct.core.LCException;
-import org.codi.lct.data.LCConfig;
-import org.codi.lct.data.LCConfig.LCConfigBuilder;
+import org.codi.lct.impl.data.LCConfig;
+import org.codi.lct.impl.data.LCConfig.LCConfigBuilder;
 
 @Slf4j
 @UtilityClass

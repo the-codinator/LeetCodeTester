@@ -1,4 +1,4 @@
-package org.codi.lct.core;
+package org.codi.lct.core.tester;
 
 /**
  * An executor, which when provided a test case, figures out everything it needs to, and then runs the test for each

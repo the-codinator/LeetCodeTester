@@ -1,4 +1,4 @@
-package org.codi.lct.core;
+package org.codi.lct.core.tester;
 
 import org.codi.lct.impl.testcase.AutoCustomTestCaseProvider;
 import org.codi.lct.impl.testcase.AutoDataFileTestCaseProvider;

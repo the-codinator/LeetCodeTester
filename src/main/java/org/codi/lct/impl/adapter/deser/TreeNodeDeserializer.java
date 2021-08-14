@@ -1,4 +1,4 @@
-package org.codi.lct.adapter.deser;
+package org.codi.lct.impl.adapter.deser;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

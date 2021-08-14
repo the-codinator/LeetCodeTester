@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 import lombok.experimental.ExtensionMethod;
 import lombok.extern.slf4j.Slf4j;
 import org.codi.lct.core.LCException;
-import org.codi.lct.core.LCExecutor;
-import org.codi.lct.core.LCTester;
-import org.codi.lct.data.LCConfig;
-import org.codi.lct.data.LCTestCaseExecution;
+import org.codi.lct.core.tester.LCExecutor;
+import org.codi.lct.core.tester.LCTester;
+import org.codi.lct.impl.data.LCConfig;
+import org.codi.lct.impl.data.LCTestCaseExecution;
 import org.codi.lct.impl.helper.ConfigHelper;
 import org.codi.lct.impl.helper.JunitHelper;
 import org.codi.lct.impl.helper.ReflectionHelper;
@@ -34,10 +34,12 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 public class LCExtensionImpl implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback, AfterAllCallback,
     ParameterResolver {
 
+    private final LCCheckerChainImpl checkers = new LCCheckerChainImpl();
+    private final List<LCTestCaseExecution> results = new ArrayList<>();
+
     private LCConfig classConfig;
     private List<LCConfig> solutionMethodConfigs;
     private Method outputTransformationMethod;
-    private List<LCTestCaseExecution> results = new ArrayList<>();
     private boolean executedAtLeastOnce;
 
     // ***** Test Lifecycle ***** //
@@ -52,6 +54,7 @@ public class LCExtensionImpl implements BeforeAllCallback, BeforeEachCallback, A
         solutionMethodConfigs = solutionMethods.stream()
             .map(method -> classConfig.withMethod(method))
             .collect(Collectors.toList());
+        checkers.initDefaultCheckers();
     }
 
     @Override
@@ -59,7 +62,8 @@ public class LCExtensionImpl implements BeforeAllCallback, BeforeEachCallback, A
         executedAtLeastOnce = true;
         // Prep new executor for each test case
         context.createExecutor(
-            new LCExecutorImpl(context.getRequiredTestInstance(), solutionMethodConfigs, outputTransformationMethod));
+            new LCExecutorImpl(context.getRequiredTestInstance(), solutionMethodConfigs, outputTransformationMethod,
+                checkers));
     }
 
     @Override

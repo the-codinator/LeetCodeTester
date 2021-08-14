@@ -1,8 +1,8 @@
 package org.codi.lct.example;
 
 import java.util.Set;
-import org.codi.lct.core.LCTestCase;
-import org.codi.lct.core.LCTester;
+import org.codi.lct.core.tester.LCTestCase;
+import org.codi.lct.core.tester.LCTester;
 
 /**
  * Custom verification of the result.
