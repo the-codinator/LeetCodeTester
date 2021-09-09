@@ -1,7 +1,6 @@
 package org.codi.lct.impl.adapter.deser;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import java.io.IOException;
@@ -14,7 +13,7 @@ public class ListNodeDeserializer extends StdDeserializer<ListNode> {
     }
 
     @Override
-    public ListNode deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    public ListNode deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         return deserializeIntArrayToListNode(p.getCodec().readValue(p, int[].class));
     }
 

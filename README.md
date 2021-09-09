@@ -2,6 +2,8 @@
 
 A Java Testing Suite for [LeetCode][leetcode] syntax built over [JUnit 5][junit5].
 
+Status: Alpha release, In development.
+
 Uses:
 
 - [Lombok][lombok] for some boilerplate
