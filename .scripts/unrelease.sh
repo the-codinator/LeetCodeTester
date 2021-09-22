@@ -22,7 +22,6 @@ PACKAGE_ID=$(curl "https://api.github.com/user/packages/maven/$PROJECT_GROUP.$PR
 [ -z "$PACKAGE_ID" ] && echo 'Package not found in repository' && exit 1
 
 # Delete package
-
 curl -X DELETE "https://api.github.com/user/packages/maven/$PROJECT_GROUP.$PROJECT_NAME/versions/$PACKAGE_ID" \
   -H "Authorization: Bearer $GITHUB_PAT" \
   -H 'Accept: application/vnd.github.v3+json' \

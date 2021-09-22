@@ -6,7 +6,7 @@
   <name>LeetCode Tester</name>
   <groupId>org.codi</groupId>
   <artifactId>leetcode-tester</artifactId>
-  <version>0.0.6-SNAPSHOT</version>
+  <version>0.0.9-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <developers>
@@ -30,38 +30,24 @@
     <plugin.compiler.version>3.8.1</plugin.compiler.version>
     <plugin.resources.version>3.2.0</plugin.resources.version>
     <plugin.surefire.version>2.22.2</plugin.surefire.version>
-    <plugin.enforcer.version>3.0.0-M3</plugin.enforcer.version>
+    <plugin.enforcer.version>3.0.0</plugin.enforcer.version>
     <plugin.versions.version>2.8.1</plugin.versions.version>
     <plugin.checkstyle.version>3.1.2</plugin.checkstyle.version>
-    <config.checkstyle.version>8.45</config.checkstyle.version>
+    <config.checkstyle.version>9.0</config.checkstyle.version>
     <plugin.javadoc.version>3.3.0</plugin.javadoc.version>
     <plugin.sources.version>3.2.1</plugin.sources.version>
-    <plugin.moditect.version>1.0.0.RC1</plugin.moditect.version>
+    <!-- <plugin.moditect.version>1.0.0.RC1</plugin.moditect.version> -->
     <lombok.version>1.18.20</lombok.version>
     <!-- runtime -->
-    <jackson.version>2.12.4</jackson.version>
+    <jackson.version>2.12.5</jackson.version>
     <lang3.version>3.12.0</lang3.version>
-    <junit.version>5.7.2</junit.version>
+    <junit.version>5.8.0</junit.version>
     <slf4j.version>1.7.32</slf4j.version>
     <!-- test -->
-    <logback.version>1.2.5</logback.version>
+    <logback.version>1.2.6</logback.version>
   </properties>
 
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
-
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
-
     <plugins>
       <!-- Compile Phase -->
       <plugin>
@@ -198,6 +184,8 @@
   <distributionManagement>
     <repository>
       <id>the-codinator@github</id>
+      <name>GitHub Packages (Maven) - github/the-codinator</name>
+      <url>https://${env.GITHUB_USER}:${env.GITHUB_PAT}@maven.pkg.github.com/the-codinator/LeetCodeTester</url>
     </repository>
   </distributionManagement>
 
