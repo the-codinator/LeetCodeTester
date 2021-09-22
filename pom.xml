@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <name>LeetCode Tester</name>
@@ -196,11 +197,24 @@
 
   <distributionManagement>
     <repository>
-      <id>github-codi</id>
-      <name>Codi GitHub Maven Packages Repository</name>
-      <url>https://maven.pkg.github.com/the-codinator/LeetCodeTester</url>
+      <id>the-codinator@github</id>
     </repository>
   </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>the-codinator@github</id>
+      <name>GitHub Packages (Maven) - github/the-codinator</name>
+      <url>https://${env.GITHUB_USER}:${env.GITHUB_PAT}@maven.pkg.github.com/the-codinator/LeetCodeTester</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <dependencies>
     <!-- Json -->
