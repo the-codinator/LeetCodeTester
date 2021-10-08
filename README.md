@@ -88,7 +88,7 @@ How to compile ? Run `make build`
 
 ## Disclaimer
 
-I am in no way affiliated to LeetCode. I do not have anything to do with <leetcode.com>. For all means and purposes,
+I am in no way affiliated to LeetCode. I do not have anything to do with "leetcode.com". For all means and purposes,
 this is an independent project from LeetCode. This project is just an easy utility to write tests for code using input /
 output syntax similar to that of LeetCode. Improvement ideas are welcome.
 
