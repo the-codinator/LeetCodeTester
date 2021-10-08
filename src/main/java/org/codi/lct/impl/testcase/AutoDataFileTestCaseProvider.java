@@ -18,7 +18,7 @@ import org.codi.lct.impl.helper.JunitHelper;
 import org.codi.lct.impl.helper.ReflectionHelper;
 
 /**
- * Discovers Data File & Custom Tests
+ * Discovers Data File and Custom Tests
  */
 @Slf4j
 @ExtensionMethod({ConfigHelper.class, FileHelper.class, JacksonHelper.class, JunitHelper.class, ReflectionHelper.class})

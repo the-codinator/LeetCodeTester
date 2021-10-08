@@ -41,7 +41,7 @@ public class JacksonHelper {
             return input == null ? Collections.emptyList()
                 : readAllValues(objectMapper.readValues(objectMapper.createParser(input), Object.class));
         } catch (IOException e) {
-            throw new LCException("Error reading values from input string", e);
+            throw new LCException("Error reading values from input string: " + input, e);
         }
     }
 
@@ -49,7 +49,7 @@ public class JacksonHelper {
         try {
             return readAllValues(objectMapper.readValues(objectMapper.createParser(input), Object.class));
         } catch (IOException e) {
-            throw new LCException("Error reading values from input stream", e);
+            throw new LCException("Error reading values from input stream: " + input, e);
         }
     }
 
@@ -59,7 +59,8 @@ public class JacksonHelper {
             iterator.forEachRemaining(values::add);
             return values;
         } catch (Exception e) {
-            throw new LCException("Error reading values from input stream", e);
+            throw new LCException(
+                "Error reading values from input content: " + iterator.getCurrentLocation().getSourceRef(), e);
         }
     }
 

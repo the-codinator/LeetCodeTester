@@ -7,6 +7,8 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 import lombok.NonNull;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
+import org.codi.lct.core.LCException;
 import org.codi.lct.core.tester.LCTestCase;
 import org.codi.lct.impl.data.LCConfig;
 import org.codi.lct.impl.helper.ConfigHelper;
@@ -16,8 +18,9 @@ import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 
 /**
- * Discovers Data File & Custom Tests
+ * Discovers Data File and Custom Tests
  */
+@Slf4j
 public abstract class AutoTestCaseProviderBase implements TestTemplateInvocationContextProvider {
 
     @Override
@@ -28,8 +31,13 @@ public abstract class AutoTestCaseProviderBase implements TestTemplateInvocation
     @Override
     public final Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
         List<TestTemplateInvocationContext> result = new ArrayList<>();
-        generateTestCases(ConfigHelper.withClass(ConfigHelper.BASE_CONFIG, context.getRequiredTestClass()),
-            (name, tc) -> result.add(new AutoTestCaseContext(name, tc)));
+        try {
+            generateTestCases(ConfigHelper.withClass(ConfigHelper.BASE_CONFIG, context.getRequiredTestClass()),
+                (name, tc) -> result.add(new AutoTestCaseContext(name, tc)));
+        } catch (Exception e) {
+            log.error("Failed to generate Test Cases, Generator: " + this.getClass().getSimpleName(), e);
+            throw new LCException("Failed to generate Test Cases in " + this.getClass().getSimpleName());
+        }
         return result.stream();
     }
 

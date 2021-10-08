@@ -11,7 +11,7 @@ import org.codi.lct.impl.data.LCConfig;
 import org.codi.lct.impl.helper.ReflectionHelper;
 
 /**
- * Discovers Data File & Custom Tests
+ * Discovers Data File and Custom Tests
  */
 @Slf4j
 public final class AutoCustomTestCaseProvider extends AutoTestCaseProviderBase {

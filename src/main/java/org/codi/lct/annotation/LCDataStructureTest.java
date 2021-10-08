@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * LeetCode also has question where you need to design & implement a Data Structure
+ * LeetCode also has question where you need to design and implement a Data Structure
  *
  * This marker annotation indicates that the test should be run as a data structure.
  * The input would contain a list of function call invocations (function name + parameters).
