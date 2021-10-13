@@ -24,7 +24,8 @@
 
   <properties>
     <!-- build -->
-    <java.version>11</java.version>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <plugin.compiler.version>3.8.1</plugin.compiler.version>
     <plugin.resources.version>3.2.0</plugin.resources.version>
@@ -54,8 +55,6 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${plugin.compiler.version}</version>
         <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
           <compilerArgument>-Xlint</compilerArgument>
         </configuration>
       </plugin>
