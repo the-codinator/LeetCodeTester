@@ -21,10 +21,27 @@ public class LCUtil {
         return JacksonHelper.serialize(obj);
     }
 
+    /**
+     * De-serialize / parse a json string to a POJO using the internal ObjectMapper.
+     *
+     * @param str object to serialize
+     * @param type class of type to deserialize to
+     * @param <T> type parameter
+     * @return de-serialized object
+     */
     public <T> T deserialize(String str, Class<T> type) {
         return JacksonHelper.deserialize(str, type);
     }
 
+    /**
+     * Transform an object from one type to another using the internal ObjectMapper. This uses json as the intermediate
+     * transformation language / specification.
+     *
+     * @param obj object to convert
+     * @param type class of type to convert to
+     * @param <T> type parameter
+     * @return converted object
+     */
     public <T> T convert(Object obj, Class<T> type) {
         return JacksonHelper.convert(obj, type);
     }
@@ -40,17 +57,17 @@ public class LCUtil {
         return visualizeTree(root, new StringBuilder(), true, new StringBuilder()).toString();
     }
 
-    private StringBuilder visualizeTree(TreeNode node, StringBuilder prefix, boolean isTail, StringBuilder sb) {
+    private StringBuilder visualizeTree(TreeNode node, StringBuilder prefix, boolean isLeft, StringBuilder sb) {
         if (node == null) {
             return null;
         }
         // Recurse right
-        visualizeTree(node.right, prefix.append(isTail ? "│   " : "    "), false, sb);
+        visualizeTree(node.right, prefix.append(isLeft ? "│   " : "    "), false, sb);
         prefix.setLength(prefix.length() - 4); // backtrack prefix
         // Print node
-        sb.append(prefix).append(isTail ? "└── " : "┌── ").append(node.val).append('\n');
+        sb.append(prefix).append(isLeft ? "└── " : "┌── ").append(node.val).append('\n');
         // Recurse left
-        visualizeTree(node.left, prefix.append(isTail ? "    " : "│   "), true, sb);
+        visualizeTree(node.left, prefix.append(isLeft ? "    " : "│   "), true, sb);
         prefix.setLength(prefix.length() - 4); // backtrack prefix
         return sb;
     }
