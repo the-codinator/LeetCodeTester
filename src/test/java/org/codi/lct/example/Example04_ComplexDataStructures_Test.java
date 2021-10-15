@@ -7,7 +7,7 @@ import org.codi.lct.ds.TreeNode;
 /**
  * Checkout {@link org.codi.lct.ds} for supported data structures
  */
-public class Example04ComplexDataStructures extends LCTester {
+public class Example04_ComplexDataStructures_Test extends LCTester {
 
     public ListNode inorder(TreeNode root) {
         ListNode preStart = new ListNode(0, null);

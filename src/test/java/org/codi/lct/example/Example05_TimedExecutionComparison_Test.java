@@ -11,7 +11,7 @@ import org.codi.lct.core.tester.LCTester;
  * Note: all {@code @LCSolution} methods are run on the same test instance
  */
 @LCTrackExecutionTime
-public class Example05TimedExecutionComparison extends LCTester {
+public class Example05_TimedExecutionComparison_Test extends LCTester {
 
     // We can also return a single test case instead of a list
     public static LCTestCase lcTestCases() {

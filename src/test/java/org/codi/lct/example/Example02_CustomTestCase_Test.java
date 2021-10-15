@@ -12,7 +12,7 @@ import org.codi.lct.core.tester.LCTester;
  *
  * Note: each test case is run on a separate test instance
  */
-public class Example02CustomTestCase extends LCTester {
+public class Example02_CustomTestCase_Test extends LCTester {
 
     /**
      * {@link LCTestCaseGenerator} annotation is not required since the signature matches {@code public static

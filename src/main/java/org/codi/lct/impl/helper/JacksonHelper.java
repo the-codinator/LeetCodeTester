@@ -59,8 +59,9 @@ public class JacksonHelper {
             iterator.forEachRemaining(values::add);
             return values;
         } catch (Exception e) {
-            throw new LCException(
-                "Error reading values from input content: " + iterator.getCurrentLocation().getSourceRef(), e);
+            throw new LCException("Error reading values from input content: " + iterator.getCurrentLocation()
+                .contentReference()
+                .getRawContent(), e);
         }
     }
 

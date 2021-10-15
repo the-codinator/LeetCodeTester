@@ -1,12 +1,10 @@
 package org.codi.lct.ds.extra;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-@EqualsAndHashCode
 @SuppressWarnings("checkstyle:MemberName")
 public class Pair<L, R> {
 

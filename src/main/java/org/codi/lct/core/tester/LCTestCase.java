@@ -9,7 +9,7 @@ import lombok.experimental.ExtensionMethod;
 import org.codi.lct.impl.helper.JacksonHelper;
 
 /**
- * Defines a test case based on expected output & provided inputs.
+ * Defines a test case based on expected output and provided inputs.
  * Inputs can be in any format, and the executor will attempt to convert it to the right format prior to execution.
  */
 @Value

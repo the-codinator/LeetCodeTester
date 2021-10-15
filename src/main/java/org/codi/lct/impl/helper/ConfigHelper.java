@@ -27,7 +27,7 @@ public class ConfigHelper {
 
     static {
         // Load default properties
-        Properties props = FileHelper.loadProperties(null, "lc-tester.properties");
+        Properties props = FileHelper.loadProperties(null, "lct/lc-tester.properties");
         BASE_CONFIG = LCConfig.builder()
             .trackExecutionTime(getBooleanProperty(props, LCConfig.Fields.trackExecutionTime, false))
             .allowMissingExpectedValues(getBooleanProperty(props, LCConfig.Fields.allowMissingExpectedValues, false))

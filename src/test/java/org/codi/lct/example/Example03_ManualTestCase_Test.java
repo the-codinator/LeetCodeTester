@@ -21,7 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * To avoid sharing the test instance, create multiple @Test methods instead
  */
 @ExtendWith(LCExtension.class)
-public class Example03ManualTestCase {
+public class Example03_ManualTestCase_Test {
 
     @Test
     @DisplayName("My manual test runner")

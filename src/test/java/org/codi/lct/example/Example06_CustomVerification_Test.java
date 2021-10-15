@@ -10,7 +10,7 @@ import org.codi.lct.core.tester.LCTester;
  * This is extremely useful when there are multiple correct answers. The result must match a certain condition rather
  * than a specific result.
  */
-public class Example06CustomVerification extends LCTester {
+public class Example06_CustomVerification_Test extends LCTester {
 
     public static LCTestCase lcTestCases() {
         return LCTestCase.builder().expected(3).input(Set.of("long", "1234", "xyz", "ttt", "cartoon")).build();
