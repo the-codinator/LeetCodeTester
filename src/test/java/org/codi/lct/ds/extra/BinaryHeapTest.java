@@ -11,31 +11,30 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.lang3.ArrayUtils;
-import org.codi.lct.annotation.LCSolution;
-import org.codi.lct.annotation.LCTestCaseGenerator;
-import org.codi.lct.core.tester.LCTestCase;
-import org.codi.lct.core.tester.LCTester;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-public class BinaryHeapTest extends LCTester {
+public class BinaryHeapTest {
 
     private static final Random rng = new Random();
 
-    @LCTestCaseGenerator
-    public static List<LCTestCase> lcTestCases() {
+    public static List<int[]> testCaseProvider() {
         int[] noDup = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
         int[] withDup = {-1, 1, -2, 2, -3, 3, 3, 0, 0, 0, -10, 2000, Integer.MIN_VALUE, Integer.MAX_VALUE, 1024, -999};
-        return List.of(tc(noDup), tc(noDup), tc(noDup), tc(withDup), tc(withDup), tc(withDup));
+        return List.of(shuffle(noDup), shuffle(noDup), shuffle(noDup), shuffle(withDup), shuffle(withDup),
+            shuffle(withDup));
     }
 
-    private static LCTestCase tc(int[] arr) {
+    private static int[] shuffle(int[] arr) {
         arr = ArrayUtils.clone(arr);
         ArrayUtils.shuffle(arr, rng);
-        return LCTestCase.builder().input(arr).build();
+        return arr;
     }
 
-    @LCSolution
-    public void driver(int[] array) {
+    @ParameterizedTest
+    @MethodSource("testCaseProvider")
+    public void testStandardProperties(int[] array) {
         PriorityQueue<Integer> pq;
         BinaryHeap heap;
         if (array.length == 0) {
