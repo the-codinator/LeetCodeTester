@@ -18,7 +18,9 @@ Library Dependencies:
 
 ## Usage
 
-### Maven
+### Setup
+
+#### Maven
 
 Include the following `repository` to your project pom. This is required since releases are currently published to
 GitHub Packages. You would also need to set the environment variables `GITHUB_USER` and `GITHUB_PAT` which are your
@@ -45,12 +47,27 @@ Include the following `dependency` to the `dependencies` section of your project
 </dependency>
 ```
 
+#### Logger Adapter
+
 Additionally, include any [SLF4J supported logger implementation](http://www.slf4j.org/faq.html#where_is_binding)
 dependencies for output. The tests here use [logback](https://mvnrepository.com/artifact/ch.qos.logback/logback-classic)
 with [this configuration](./src/test/resources/logback.xml)
 
 With the above configuration, you should be able to run individual tests easily via your favorite IDEs like IntelliJ,
-Eclipse, etc
+Eclipse, etc. Checkout JUnit documentation for running tests via Maven (Surefire plugin and JUnit Platform & Engine).
+
+#### Java 9 Modules
+
+If you are using Java 9 Modules, then you can `requires` the module "org.codi.LeetCodeTester". Also, you would need to
+add `opens` for all test classes since the test executor makes heavy use of Java Reflection to run the tests. For
+simplicity, you could define your module as `open`.
+
+```java
+// module-info.java
+open module MyModule {
+    requires org.codi.LeetCodeTestre;
+}
+```
 
 ### Examples
 

@@ -8,7 +8,7 @@ import java.util.NoSuchElementException;
  *
  * Generic version of this is {@link java.util.ArrayDeque}, except that you can't get by index
  */
-public class CircularIntArray {
+public class CircularArray {
 
     private final int[] arr;
     private int offset;
@@ -17,7 +17,7 @@ public class CircularIntArray {
     /**
      * Create new circular array of size {@param capacity}
      */
-    public CircularIntArray(int capacity) {
+    public CircularArray(int capacity) {
         this.arr = new int[capacity];
         offset = 0;
         size = 0;
