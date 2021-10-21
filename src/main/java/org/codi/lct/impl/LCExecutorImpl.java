@@ -114,8 +114,8 @@ public final class LCExecutorImpl implements LCExecutor {
             .build();
         log.debug("Test Case Execution: {}", execution);
         if (config.isTrackExecutionTime()) {
-            log.info("[Execution Duration] {}: {} ms", config.getSolutionMethod().getName(),
-                (end - start + 500_000) / 1_000_000);
+            log.info("[Execution Duration] {}.{}: {} ms", config.getTestClass().getSimpleName(),
+                config.getSolutionMethod().getName(), (end - start + 500_000) / 1_000_000);
         }
         return execution;
     }
