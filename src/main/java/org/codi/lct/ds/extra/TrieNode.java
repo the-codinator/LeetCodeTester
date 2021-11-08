@@ -129,7 +129,7 @@ public class TrieNode {
      * @param prefix prefix to query the Trie with
      * @return TrieNode at prefix (possibly null if absent)
      */
-    public TrieNode findPrefix(@NonNull String prefix) {
+    public TrieNode findPrefix(@NonNull CharSequence prefix) {
         TrieNode node = this;
         for (int i = 0; i < prefix.length() && node != null; i++) {
             node = node.children[resolveIndex(prefix.charAt(i))];
