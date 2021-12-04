@@ -105,7 +105,7 @@ public class TrieNode {
      *
      * @param word word to add
      */
-    public void addWord(@NonNull String word) {
+    public void addWord(@NonNull CharSequence word) {
         TrieNode node = this;
         for (int i = 0; i < word.length(); i++) {
             int x = resolveIndex(word.charAt(i));
@@ -116,7 +116,7 @@ public class TrieNode {
             node.size++;
         }
         if (node.word == null) {
-            node.word = word;
+            node.word = word.toString();
             node.id = size;
         }
         size++;
