@@ -25,6 +25,11 @@ public class TrieNode {
     private String word;
 
     /**
+     * Indicates the character key which this trie is mapped to in the parent
+     */
+    private char character = 0;
+
+    /**
      * Number of times a word was added to the Trie
      */
     private int count;
@@ -108,9 +113,12 @@ public class TrieNode {
     public void addWord(@NonNull CharSequence word) {
         TrieNode node = this;
         for (int i = 0; i < word.length(); i++) {
-            int x = resolveIndex(word.charAt(i));
+            char ch = word.charAt(i);
+            int x = resolveIndex(ch);
             if (node.children[x] == null) {
-                node.children[x] = new TrieNode(children.length);
+                TrieNode newNode = new TrieNode(children.length);
+                newNode.character = ch;
+                node.children[x] = newNode;
             }
             node = node.children[x];
             node.size++;
@@ -135,5 +143,21 @@ public class TrieNode {
             node = node.children[resolveIndex(prefix.charAt(i))];
         }
         return node;
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        toString(sb);
+        return sb.toString();
+    }
+
+    private void toString(StringBuilder sb) {
+        sb.append('[').append(isWordPresent() ? '✓' : '✗');
+        for (TrieNode child : children) {
+            if (child != null) {
+                child.toString(sb.append(',').append(child.character).append('='));
+            }
+        }
+        sb.append(']');
     }
 }

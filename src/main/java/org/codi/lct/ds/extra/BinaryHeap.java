@@ -337,4 +337,9 @@ public class BinaryHeap {
     public int[] heap() {
         return Arrays.copyOf(heap, size);
     }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(heap());
+    }
 }
