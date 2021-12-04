@@ -5,7 +5,7 @@
   <name>LeetCode Tester</name>
   <groupId>org.codi</groupId>
   <artifactId>leetcode-tester</artifactId>
-  <version>0.2.4-SNAPSHOT</version>
+  <version>0.2.4</version>
   <packaging>jar</packaging>
 
   <developers>
@@ -19,7 +19,7 @@
     <url>https://github.com/the-codinator/LeetCodeTester.git</url>
     <connection>scm:git:https://github.com/the-codinator/LeetCodeTester.git</connection>
     <developerConnection>scm:git:https://github.com/the-codinator/LeetCodeTester.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>leetcode-tester-0.2.4</tag>
   </scm>
 
   <properties>
