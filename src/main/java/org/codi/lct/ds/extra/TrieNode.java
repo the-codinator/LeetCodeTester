@@ -106,7 +106,7 @@ public class TrieNode {
 
     /**
      * Add a word to this Trie. Always invoke this on the root of the Trie only. Invoking this on a child Trie will
-     * may corrupt the size & id properties, and all further operations will have undefined behavior.
+     * may corrupt the 'size' and/or 'id' properties, and all further operations will have undefined behavior.
      *
      * @param word word to add
      */
