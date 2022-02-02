@@ -1,9 +1,9 @@
 
 build:
-	SH .scripts/build.sh
+	.scripts/build.sh
 
 release:
-	SH .scripts/release.sh
+	.scripts/release.sh
 
 unrelease:
-	SH .scripts/unrelease.sh $V
+	.scripts/unrelease.sh $V

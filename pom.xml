@@ -18,8 +18,7 @@
 
   <scm>
     <url>https://github.com/the-codinator/LeetCodeTester.git</url>
-    <connection>scm:git:https://github.com/the-codinator/LeetCodeTester.git</connection>
-    <developerConnection>scm:git:https://github.com/the-codinator/LeetCodeTester.git</developerConnection>
+    <connection>scm:git:git@github.com:the-codinator/LeetCodeTester.git</connection>
     <tag>HEAD</tag>
   </scm>
 
