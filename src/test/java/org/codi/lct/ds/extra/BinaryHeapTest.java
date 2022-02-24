@@ -7,17 +7,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.lang3.ArrayUtils;
+import org.codi.lct.TestHelper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public class BinaryHeapTest {
-
-    private static final Random rng = new Random();
 
     public static List<int[]> testCaseProvider() {
         int[] noDup = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
@@ -28,7 +26,7 @@ public class BinaryHeapTest {
 
     private static int[] shuffle(int[] arr) {
         arr = ArrayUtils.clone(arr);
-        ArrayUtils.shuffle(arr, rng);
+        ArrayUtils.shuffle(arr, TestHelper.rng);
         return arr;
     }
 
@@ -41,7 +39,7 @@ public class BinaryHeapTest {
             pq = new PriorityQueue<>();
             heap = new BinaryHeap(100);
         } else {
-            pq = new PriorityQueue<>(IntStream.of(array).boxed().collect(Collectors.toList()));
+            pq = IntStream.of(array).boxed().collect(Collectors.toCollection(PriorityQueue::new));
             heap = new BinaryHeap(array);
         }
         while (pq.size() > 5) {
@@ -51,7 +49,7 @@ public class BinaryHeapTest {
         assertFalse(heap.isFull());
         assertFalse(heap.isEmpty());
         while (heap.size() < heap.capacity()) {
-            int x = rng.nextInt(100) - 50; // Numbers from [-50,50]
+            int x = TestHelper.rng.nextInt(100) - 50; // Numbers from [-50,50]
             pq.add(x);
             heap.add(x);
         }
@@ -69,8 +67,8 @@ public class BinaryHeapTest {
     @Test
     public void testUpdateAndSort() {
         BinaryHeap heap = new BinaryHeap(100);
-        for (int i = rng.nextInt(50) + 10; i >= 0; i--) {
-            heap.add(rng.nextInt(600) - 50);
+        for (int i = TestHelper.rng.nextInt(50) + 10; i >= 0; i--) {
+            heap.add(TestHelper.rng.nextInt(600) - 50);
         }
         heap.update(3, Integer.MIN_VALUE);
         heap.update(3, Integer.MAX_VALUE);
