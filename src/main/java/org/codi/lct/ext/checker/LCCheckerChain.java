@@ -1,4 +1,4 @@
-package org.codi.lct.impl.checker;
+package org.codi.lct.ext.checker;
 
 public interface LCCheckerChain {
 

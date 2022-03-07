@@ -31,18 +31,18 @@
     <plugin.enforcer.version>3.0.0</plugin.enforcer.version>
     <plugin.versions.version>2.9.0</plugin.versions.version>
     <plugin.checkstyle.version>3.1.2</plugin.checkstyle.version>
-    <config.checkstyle.version>9.3</config.checkstyle.version>
+    <config.checkstyle.version>10.0</config.checkstyle.version>
     <plugin.javadoc.version>3.3.1</plugin.javadoc.version>
     <plugin.sources.version>3.2.1</plugin.sources.version>
     <!-- <plugin.moditect.version>1.0.0.RC1</plugin.moditect.version> -->
     <lombok.version>1.18.22</lombok.version>
     <!-- runtime -->
-    <jackson.version>2.13.1</jackson.version>
+    <jackson.version>2.13.2</jackson.version>
     <lang3.version>3.12.0</lang3.version>
     <junit.version>5.8.2</junit.version>
-    <slf4j.version>1.7.35</slf4j.version>
+    <slf4j.version>1.7.36</slf4j.version>
     <!-- test -->
-    <logback.version>1.2.10</logback.version>
+    <logback.version>1.2.11</logback.version>
   </properties>
 
   <build>

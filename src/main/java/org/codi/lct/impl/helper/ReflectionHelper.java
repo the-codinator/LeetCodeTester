@@ -23,7 +23,7 @@ import org.codi.lct.annotation.LCSolution;
 import org.codi.lct.annotation.LCTestCaseGenerator;
 import org.codi.lct.core.LCException;
 import org.codi.lct.core.tester.LCTestCase;
-import org.codi.lct.impl.checker.LCChecker;
+import org.codi.lct.ext.checker.LCChecker;
 
 @Slf4j
 @UtilityClass

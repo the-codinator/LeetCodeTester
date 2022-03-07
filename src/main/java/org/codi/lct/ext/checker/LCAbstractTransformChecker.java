@@ -1,4 +1,4 @@
-package org.codi.lct.impl.checker;
+package org.codi.lct.ext.checker;
 
 import java.util.Arrays;
 import java.util.HashSet;

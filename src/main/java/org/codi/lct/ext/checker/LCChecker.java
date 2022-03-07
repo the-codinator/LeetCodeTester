@@ -1,4 +1,4 @@
-package org.codi.lct.impl.checker;
+package org.codi.lct.ext.checker;
 
 /**
  * Custom checker implementations should implement this interface. The custom checker class MUST have a default

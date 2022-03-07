@@ -1,7 +1,7 @@
 package org.codi.lct.impl.adapter.eq;
 
-import org.codi.lct.impl.checker.LCChecker;
-import org.codi.lct.impl.checker.LCCheckerChain;
+import org.codi.lct.ext.checker.LCChecker;
+import org.codi.lct.ext.checker.LCCheckerChain;
 
 /**
  * Special checker with the highest priority to check nulls (we don't want to deal with NPEs anywhere)

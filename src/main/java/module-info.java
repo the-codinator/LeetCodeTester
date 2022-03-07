@@ -9,6 +9,8 @@ module org.codi.LeetCodeTester {
     // Utilities
     exports org.codi.lct.ds;
     exports org.codi.lct.ds.extra;
+    // Extensions
+    exports org.codi.lct.ext.checker;
 
     /* Module Dependencies */
     // Lombok (Compile Only)

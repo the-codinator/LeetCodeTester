@@ -2,8 +2,8 @@ package org.codi.lct.impl.adapter.eq;
 
 import java.lang.reflect.Array;
 import java.util.Objects;
-import org.codi.lct.impl.checker.LCChecker;
-import org.codi.lct.impl.checker.LCCheckerChain;
+import org.codi.lct.ext.checker.LCChecker;
+import org.codi.lct.ext.checker.LCCheckerChain;
 
 public class ArrayChecker implements LCChecker {
 

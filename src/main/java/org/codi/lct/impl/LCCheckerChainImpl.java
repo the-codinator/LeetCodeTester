@@ -5,10 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.NonNull;
+import org.codi.lct.ext.checker.LCChecker;
+import org.codi.lct.ext.checker.LCCheckerChain;
 import org.codi.lct.impl.adapter.eq.ArrayChecker;
 import org.codi.lct.impl.adapter.eq.NullChecker;
-import org.codi.lct.impl.checker.LCChecker;
-import org.codi.lct.impl.checker.LCCheckerChain;
 import org.codi.lct.impl.helper.ReflectionHelper;
 
 public class LCCheckerChainImpl implements LCCheckerChain {

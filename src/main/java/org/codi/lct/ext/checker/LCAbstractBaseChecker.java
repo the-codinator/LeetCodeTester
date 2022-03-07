@@ -1,4 +1,4 @@
-package org.codi.lct.impl.checker;
+package org.codi.lct.ext.checker;
 
 /**
  * Boilerplate checker for values having a common ancestral type {@param <T>}
