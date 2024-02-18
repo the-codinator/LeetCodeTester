@@ -39,6 +39,7 @@ public final class LCExecutorImpl implements LCExecutor {
      * We do this so clients have a harder time gaining direct access to the underlying executor instance.
      */
     @Getter
+    @SuppressWarnings("rawtypes")
     private final LCExecutor proxy = (LCExecutor) Proxy.newProxyInstance(this.getClass().getClassLoader(),
         new Class[]{LCExecutor.class}, (proxy, method, methodArgs) -> {
             try {

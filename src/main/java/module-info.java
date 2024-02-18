@@ -14,7 +14,7 @@ module org.codi.LeetCodeTester {
 
     /* Module Dependencies */
     // Lombok (Compile Only)
-    requires static lombok;
+    requires static transitive lombok;
     // Jackson
     requires com.fasterxml.jackson.core;
     requires transitive com.fasterxml.jackson.annotation;

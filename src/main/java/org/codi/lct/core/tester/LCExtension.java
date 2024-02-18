@@ -8,6 +8,7 @@ import org.codi.lct.impl.LCExtensionImpl;
  * It is recommended to sub-class {@link LCTester} instead of using this extension directly, unless you want build a
  * custom extension
  */
+@SuppressWarnings("exports")
 public final class LCExtension extends LCExtensionImpl {
     // Wrapper over implementation
 }
